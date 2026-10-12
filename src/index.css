@@ -1,0 +1,688 @@
+@import "bootstrap/dist/css/bootstrap.min.css";
+@import "bootstrap-icons/font/bootstrap-icons.css";
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap");
+
+/* ==========================================================================
+   GLOBAL INTER FONT ENFORCEMENT & ICON FONT PRESERVATION
+   ========================================================================== */
+html,
+body,
+button,
+input,
+select,
+textarea,
+table,
+th,
+td,
+p,
+div,
+label,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+a,
+li,
+ul,
+form {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+}
+
+span:not(.bi):not([class^="bi-"]):not([class*=" bi-"]),
+i:not(.bi):not([class^="bi-"]):not([class*=" bi-"]) {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+}
+
+/* Explicitly guarantee Bootstrap Icons use bootstrap-icons font */
+.bi,
+.bi::before,
+[class^="bi-"]::before,
+[class*=" bi-"]::before {
+  font-family: "bootstrap-icons" !important;
+  display: inline-block;
+  font-style: normal;
+  font-weight: normal !important;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  vertical-align: -.125em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Tabular Numbers for financial values using Inter's OpenType features */
+.financial-value,
+.font-tabular {
+  font-feature-settings: "tnum" 1, "cv05" 1, "cv11" 1;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.3px;
+}
+
+/* ==========================================================================
+   THEME VARIABLES & COLOR PALETTE
+   ========================================================================== */
+:root {
+  --bg-primary: radial-gradient(30.69% 108.71% at 29.63% 82.87%, #efddb866 0%, #fcfefe66 100%), radial-gradient(35.13% 35.18% at 73.15% 17.18%, #4179ff33 0%, #eefcfc66 100%);
+  --bg-surface: #EDFAE6;
+  --bg-surface-elevated: #FFFFFF;
+  --border-color: #e2e8f0;
+  --border-color-subtle: #f1f5f9;
+  --color-primary: #52D300;
+  --color-primary-hover: #45b500;
+  --color-primary-glow: rgba(82, 211, 0, 0.25);
+  --color-success: #16a34a;
+  --color-danger: #ef4444;
+  --color-warning: #f59e0b;
+  --color-info: #0284c7;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --header-height: 72px;
+  --transition-speed: 0.2s;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: radial-gradient(30.69% 108.71% at 29.63% 82.87%, #efddb866 0%, #fcfefe66 100%), radial-gradient(35.13% 35.18% at 73.15% 17.18%, #4179ff33 0%, #eefcfc66 100%);
+  background-attachment: fixed;
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  letter-spacing: -0.01em;
+}
+
+/* ==========================================================================
+   SMOOTH HUMAN-CRAFTED SCROLLBARS
+   ========================================================================== */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.02);
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ==========================================================================
+   TOP NAVIGATION BAR (NO LEFT SIDEBAR)
+   ========================================================================== */
+.superadmin-top-nav {
+  height: var(--header-height);
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.75);
+  position: sticky;
+  top: 0;
+  z-index: 1040;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.03);
+}
+
+.nav-brand-logo {
+  height: 36px;
+  object-fit: contain;
+}
+
+.brand-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: #166534;
+  background: #EDFAE6;
+  border: 1px solid #bbf7d0;
+  border-radius: 6px;
+  padding: 2px 7px;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* ==========================================================================
+   TOP NAVIGATION BAR & SEGMENTED CONTROLS (HIGH VISIBILITY)
+   ========================================================================== */
+.superadmin-top-nav {
+  height: 76px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.85);
+  position: sticky;
+  top: 0;
+  z-index: 1040;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.04);
+}
+
+.nav-brand-logo {
+  height: 38px;
+  object-fit: contain;
+}
+
+/* Central High-Visibility Segmented Navigation Track */
+.top-nav-segmented-track {
+  display: inline-flex;
+  align-items: center;
+  background: #f1f5f9;
+  padding: 4px 6px;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  gap: 6px;
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+/* Individual Navigation Tab / Pill */
+.top-nav-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.55rem 1.15rem;
+  color: #64748b;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.88rem;
+  border-radius: 10px;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1.5px solid transparent;
+  position: relative;
+  letter-spacing: -0.01em;
+}
+
+.top-nav-tab:hover:not(.active) {
+  color: #0f172a;
+  background-color: rgba(255, 255, 255, 0.7);
+}
+
+/* Icon Box inside Tab */
+.top-nav-icon-box {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  background: rgba(226, 232, 240, 0.6);
+  color: #64748b;
+  transition: all 0.18s ease;
+}
+
+/* Active State: Elevated, bold, crisp with neon accent */
+.top-nav-tab.active {
+  background: #ffffff;
+  color: #0f172a;
+  font-weight: 700;
+  border-color: rgba(203, 213, 225, 0.8);
+  border-bottom: 2.5px solid #52D300;
+  box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.08), 0 2px 4px -1px rgba(15, 23, 42, 0.04);
+}
+
+.top-nav-tab.active .top-nav-icon-box {
+  background: #EDFAE6;
+  color: #166534;
+  border: 1px solid #A3E6A3;
+}
+
+/* Pill Count Badge */
+.top-nav-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  transition: all 0.18s ease;
+}
+
+.top-nav-tab.active .top-nav-badge {
+  background: #EDFAE6;
+  color: #166534;
+  border-color: #bbf7d0;
+}
+
+/* Exact Plan / Subscription Module Cards from Screenshot */
+.subscription-module-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.45rem 1.45rem 1.25rem 1.45rem;
+  min-height: 165px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  position: relative;
+}
+
+.subscription-module-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 8px 20px -3px rgba(15, 23, 42, 0.06);
+  transform: translateY(-2px);
+}
+
+.subscription-module-title {
+  font-weight: 700;
+  color: #1e293b;
+  font-size: 0.98rem;
+  margin-bottom: 0.25rem;
+  letter-spacing: -0.01em;
+}
+
+.subscription-module-subtitle {
+  color: #94a3b8;
+  font-size: 0.82rem;
+  font-weight: 400;
+  margin-bottom: 1.5rem;
+  line-height: 1.35;
+  min-height: 22px;
+}
+
+.btn-module-subscribe {
+  background-color: #38c800 !important;
+  border: 1px solid #38c800 !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  font-size: 0.82rem !important;
+  padding: 0.44rem 1.15rem !important;
+  border-radius: 6px !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  cursor: pointer;
+  transition: all 0.16s ease !important;
+  width: fit-content;
+  text-decoration: none;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.btn-module-subscribe:hover {
+  background-color: #2ea700 !important;
+  border-color: #2ea700 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(56, 200, 0, 0.35) !important;
+  transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   HUMAN TOUCH CARDS (Warm, layered, beautifully elevated)
+   ========================================================================== */
+.custom-card {
+  background: #FFFFFF;
+  border: 1px solid rgba(226, 232, 240, 0.85);
+  border-radius: 18px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.02), 0 6px 16px -4px rgba(15, 23, 42, 0.04);
+}
+
+.custom-card:hover {
+  border-color: #cbd5e1;
+}
+
+.custom-card.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px -6px rgba(15, 23, 42, 0.08), 0 4px 8px -2px rgba(15, 23, 42, 0.03);
+}
+
+/* ==========================================================================
+   PRIMARY NEON GREEN BUTTONS & BUTTONS SYSTEM
+   ========================================================================== */
+.btn-neon-primary {
+  background-color: #52D300 !important;
+  border-color: #52D300 !important;
+  color: #000000 !important;
+  font-weight: 700 !important;
+  border-radius: 10px !important;
+  padding: 0.55rem 1.15rem;
+  font-size: 0.875rem;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  letter-spacing: -0.01em;
+}
+
+.btn-neon-primary:hover:not(:disabled) {
+  background-color: #45b500 !important;
+  border-color: #45b500 !important;
+  color: #000000 !important;
+  box-shadow: 0 6px 18px rgba(82, 211, 0, 0.35) !important;
+  transform: translateY(-1px);
+}
+
+.btn-neon-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-neon-primary:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.btn-light-custom {
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #1e293b;
+  font-weight: 600;
+  border-radius: 10px;
+  padding: 0.52rem 1rem;
+  font-size: 0.875rem;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.btn-light-custom:hover {
+  background-color: #f8fafc;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+/* ==========================================================================
+   REFINED TABLE STYLES (Human-crafted, readable, elegant)
+   ========================================================================== */
+.custom-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-bottom: 0;
+}
+
+.custom-table th {
+  background-color: #f8fafc;
+  color: #64748b;
+  font-weight: 700;
+  font-size: 0.73rem;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  border-bottom: 1px solid var(--border-color);
+  padding: 0.95rem 1.15rem;
+  white-space: nowrap;
+}
+
+.custom-table td {
+  padding: 1rem 1.15rem;
+  vertical-align: middle;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 0.865rem;
+  color: #1e293b;
+}
+
+.custom-table tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+.custom-table tbody tr:hover {
+  background-color: rgba(237, 250, 230, 0.42);
+}
+
+/* ==========================================================================
+   STATUS BADGES & GLOW PILLS
+   ========================================================================== */
+.badge-custom {
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  border-radius: 8px;
+  padding: 0.35em 0.75em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+}
+
+.badge-success-glow {
+  background: #EDFAE6;
+  color: #166534;
+  border: 1px solid #A3E6A3;
+}
+
+.badge-warning-glow {
+  background: #FFFBEB;
+  color: #B45309;
+  border: 1px solid #FDE68A;
+}
+
+.badge-danger-glow {
+  background: #FEF2F2;
+  color: #B91C1C;
+  border: 1px solid #FECACA;
+}
+
+.badge-primary-glow {
+  background: #EFF6FF;
+  color: #1D4ED8;
+  border: 1px solid #BFDBFE;
+}
+
+.badge-purple-glow {
+  background: #FAF5FF;
+  color: #6B21A8;
+  border: 1px solid #E9D5FF;
+}
+
+/* Pulsing live dot */
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+  animation: pulseGreen 2s infinite;
+}
+
+@keyframes pulseGreen {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 6px rgba(34, 197, 94, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+  }
+}
+
+/* ==========================================================================
+   TABS NAVIGATION (Exact Inter styling, rounded pill selector)
+   ========================================================================== */
+.custom-tabs-nav {
+  display: inline-flex;
+  background: #f1f5f9;
+  padding: 4px;
+  border-radius: 12px;
+  gap: 4px;
+  border: 1px solid #e2e8f0;
+}
+
+.tab-btn {
+  border: none;
+  background: transparent;
+  color: #475569;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.5rem 1.15rem;
+  border-radius: 8px;
+  transition: all 0.16s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  letter-spacing: -0.01em;
+}
+
+.tab-btn:hover:not(.tab-btn-active) {
+  color: #0f172a;
+  background: rgba(255, 255, 255, 0.65);
+}
+
+.tab-btn-active {
+  background: #EDFAE6 !important;
+  color: #166534 !important;
+  font-weight: 700 !important;
+  border: 1px solid #A3E6A3 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+/* ==========================================================================
+   FORM CONTROLS & INPUTS (Friendly, soft focus)
+   ========================================================================== */
+.form-control, .form-select {
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  font-size: 0.875rem;
+  padding: 0.62rem 0.95rem;
+  transition: all 0.15s ease;
+  color: #1e293b;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: #52D300;
+  box-shadow: 0 0 0 3px rgba(82, 211, 0, 0.22);
+}
+
+.form-label {
+  font-weight: 600;
+  font-size: 0.82rem;
+  color: #334155;
+  margin-bottom: 0.4rem;
+}
+
+/* ==========================================================================
+   MODALS (Artisanal blurred backdrop & smooth entrance)
+   ========================================================================== */
+.custom-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 1050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  overflow-y: auto;
+}
+
+.custom-modal-dialog {
+  background: #ffffff;
+  border-radius: 22px;
+  box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  width: 100%;
+  max-width: 680px;
+  overflow: hidden;
+  animation: modalFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* ==========================================================================
+   METRIC STATS CARDS & ICONS
+   ========================================================================== */
+.stat-icon-wrapper {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   COMMERCIAL PACKAGE CARDS
+   ========================================================================== */
+.plan-card {
+  position: relative;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 1.75rem;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.plan-card:hover {
+  border-color: #52D300;
+  box-shadow: 0 14px 28px -4px rgba(82, 211, 0, 0.14), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+  transform: translateY(-3px);
+}
+
+.plan-card.featured {
+  border-color: #52D300;
+  background: linear-gradient(180deg, rgba(237, 250, 230, 0.35) 0%, #ffffff 100%);
+  box-shadow: 0 8px 24px -2px rgba(82, 211, 0, 0.16);
+}
+
+.plan-badge-popular {
+  position: absolute;
+  top: -12px;
+  right: 20px;
+  background: #52D300;
+  color: #000000;
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 3px 12px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* ==========================================================================
+   HUMAN TOUCH BRAND INITIALS & JURISDICTION TAGS
+   ========================================================================== */
+.broker-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.88rem;
+  flex-shrink: 0;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.copy-badge-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 0 4px;
+  transition: color 0.15s ease;
+}
+
+.copy-badge-btn:hover {
+  color: #166534;
+}
