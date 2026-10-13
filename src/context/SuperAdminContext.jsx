@@ -31,10 +31,16 @@ export function SuperAdminProvider({ children }) {
     "Bulk Trade Manager"
   ];
 
-  const DATA_VERSION = 'v28_api_profiles_integration';
+  const DATA_VERSION = 'v29_real_profile_india_JX5577EE11';
 
   // Brokers State
   const [brokers, setBrokers] = useState(() => {
+    const savedVer = localStorage.getItem('superadmin_data_ver');
+    if (savedVer !== DATA_VERSION) {
+      localStorage.removeItem('superadmin_brokers');
+      localStorage.setItem('superadmin_data_ver', DATA_VERSION);
+      return initialBrokers;
+    }
     const saved = localStorage.getItem('superadmin_brokers');
     if (!saved) return initialBrokers;
     try {
@@ -44,14 +50,14 @@ export function SuperAdminProvider({ children }) {
     }
   });
 
-  // Subscription Packages State
+  // Subscription Packages State (Pure Dynamic Data - No Static Mocks Mixed In)
   const [packages, setPackages] = useState(() => {
     const saved = localStorage.getItem('superadmin_packages');
-    if (!saved) return initialSubscriptionPackages;
+    if (!saved) return [];
     try {
       return JSON.parse(saved);
     } catch {
-      return initialSubscriptionPackages;
+      return [];
     }
   });
 
@@ -82,11 +88,11 @@ export function SuperAdminProvider({ children }) {
     return [];
   };
 
-  // On-demand API Packages Loading Function
+  // On-demand API Packages Loading Function (When [] mark as no package found)
   const fetchPackagesFromApi = async () => {
     try {
       const apiPkgs = await apiGetAllAdmUserPackages();
-      if (Array.isArray(apiPkgs) && apiPkgs.length > 0) {
+      if (Array.isArray(apiPkgs)) {
         setPackages(apiPkgs);
         return apiPkgs;
       }
@@ -96,11 +102,12 @@ export function SuperAdminProvider({ children }) {
     return [];
   };
 
-  // Fetch API profiles once on mount
+  // Fetch API profiles & packages on mount
   useEffect(() => {
     let mounted = true;
     if (mounted) {
       fetchProfilesFromApi();
+      fetchPackagesFromApi();
     }
     return () => { mounted = false; };
   }, []);

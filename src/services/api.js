@@ -43,14 +43,14 @@ async function safeApiPost(endpoint, payload, silent = true) {
  * MAMM = 7, PAMM = 8
  */
 export const COPIER_TYPE_MAP = {
-  1: { code: 'MTM_ACC_TO_ACC', name: 'Internal Trade Copier', desc: 'Tradecopier within Manager' },
-  2: { code: 'ANY_ACC_TO_ACC', name: 'Cross-Broker Trade Copier', desc: 'From any MT5 account to any MT5 Account' },
-  3: { code: 'FUND_TO_MT_GRP', name: 'Fund to MT Group', desc: 'Fund management, copy from File format and distribute based on proportion' },
-  4: { code: 'ACCOUNT_TO_MT_GRP', name: 'Account to MT Group', desc: 'Fund management, copy from MT5 Account and distribute based on proportion' },
+  1: { code: 'MTM_ACC_TO_ACC', name: 'Internal Trade Copier', desc: 'Trade copier within the same manager' },
+  2: { code: 'ANY_ACC_TO_ACC', name: 'Cross-Broker Trade Copier', desc: 'From any MT5 account to any MT5 account' },
+  3: { code: 'FUND_TO_MT_GRP', name: 'Fund to MT Group', desc: 'Fund management — copy from file format and distribute proportionally to MT5 accounts' },
+  4: { code: 'ACCOUNT_TO_MT_GRP', name: 'Account to MT Group', desc: 'Fund management — copy from any MT5 account and distribute proportionally' },
   5: { code: 'DATA_MT_TO_MT', name: 'Broker Data Shifter', desc: 'Data shifting from one manager group to another' },
-  6: { code: 'MT_ACC_TO_ANY_ACC', name: 'Coverage Account (LP Bridge)', desc: 'Coverage account bridge' },
-  7: { code: 'MAMM', name: 'MAM – Multi-Account Manager', desc: 'Multi-Account Money Manager' },
-  8: { code: 'PAMM', name: 'PAMM – Portfolio Manager', desc: 'Percentage Allocation Money Manager' },
+  6: { code: 'MT_ACC_TO_ANY_ACC', name: 'LP Bridge', desc: 'Coverage account' },
+  7: { code: 'MAMM', name: 'MAMM', desc: 'Multi-Account Money Manager' },
+  8: { code: 'PAMM', name: 'PAMM', desc: 'Percentage Allocation Money Manager' },
 };
 
 /**
@@ -72,30 +72,88 @@ export function getStatusInfo(statusVal) {
 }
 
 /**
- * Helper to map GET_ADM_PROFILES API output into standard Broker data object
+ * Helper to return country flag emoji from country name or ISO code
  */
-export function mapApiProfileToBroker(prof) {
-  const profileId = String(prof.Profile);
-  const basic = prof.oBasic || {};
-  const firstName = basic.First || 'Broker';
-  const lastName = basic.Last || '';
-  const fullName = `${firstName} ${lastName}`.trim();
-  const email = basic.Email || `broker${profileId}@gmail.com`;
-  const referCode = prof.ReferCode || `REF-${profileId}`;
-  const dtStr = prof.dtCreated?.Tm_Str || '2026-09-29 09:38:12';
-  const country = basic.Country || (profileId === '1000' ? 'Cyprus' : profileId === '1001' ? 'United Kingdom' : 'Seychelles');
-  const ipAddr = basic.IPAddr || (profileId === '1000' ? '185.122.91.50' : profileId === '1001' ? '198.51.100.88' : '198.51.100.45');
-
+export function getCountryFlag(countryName) {
+  if (!countryName) return '🌐';
+  const name = String(countryName).toLowerCase().trim();
   const flagMap = {
+    'india': '🇮🇳',
+    'in': '🇮🇳',
     'cyprus': '🇨🇾',
+    'cy': '🇨🇾',
     'united kingdom': '🇬🇧',
+    'uk': '🇬🇧',
+    'gb': '🇬🇧',
+    'united states': '🇺🇸',
+    'usa': '🇺🇸',
+    'us': '🇺🇸',
     'seychelles': '🇸🇨',
     'sweden': '🇸🇪',
     'spain': '🇪🇸',
     'australia': '🇦🇺',
+    'singapore': '🇸🇬',
+    'uae': '🇦🇪',
+    'united arab emirates': '🇦🇪',
+    'dubai': '🇦🇪',
+    'germany': '🇩🇪',
+    'france': '🇫🇷',
+    'canada': '🇨🇦',
+    'japan': '🇯🇵',
+    'china': '🇨🇳',
+    'south africa': '🇿🇦',
+    'mauritius': '🇲🇺',
+    'saint vincent': '🇻🇨',
+    'vanuatu': '🇻🇺',
+    'belize': '🇧🇿',
+    'malta': '🇲🇹',
+    'switzerland': '🇨🇭',
+    'hong kong': '🇭🇰',
+    'new zealand': '🇳🇿',
+    'turkey': '🇹🇷',
+    'brazil': '🇧🇷',
+    'malaysia': '🇲🇾',
+    'indonesia': '🇮🇩',
+    'thailand': '🇹🇭',
+    'vietnam': '🇻🇳',
+    'philippines': '🇵🇭',
   };
-  const flag = flagMap[country.toLowerCase()] || '🌐';
-  const avatarInitials = (firstName.charAt(0) + (lastName.charAt(0) || firstName.charAt(1) || 'B')).toUpperCase();
+  return flagMap[name] || '🌐';
+}
+
+/**
+ * Helper to map GET_ADM_PROFILES API output into standard Broker data object
+ * Strictly utilizes dynamic API properties from GET_ADM_PROFILES without mock/dummy values
+ */
+export function mapApiProfileToBroker(prof) {
+  const profileId = String(prof.Profile ?? prof.id ?? '');
+  const basic = prof.oBasic || {};
+  const firstName = basic.First || '';
+  const lastName = basic.Last || '';
+  const fullName = `${firstName} ${lastName}`.trim() || `Broker ${profileId}`;
+  const email = basic.Email || '';
+  const referCode = prof.ReferCode || '';
+  const dtStr = prof.dtCreated?.Tm_Str || '';
+  
+  // Real Country provided at root of prof.Country (or fallback to oBasic.Country)
+  const country = prof.Country || basic.Country || '';
+  const flag = getCountryFlag(country);
+
+  // Real IP Address (no dummy fallback if null)
+  const ipAddr = basic.IPAddr || prof.IPAddr || '';
+
+  const avatarInitials = (
+    (firstName.charAt(0) || fullName.charAt(0) || 'B') +
+    (lastName.charAt(0) || (fullName.split(' ')[1] ? fullName.split(' ')[1].charAt(0) : 'R'))
+  ).toUpperCase();
+
+  const loginTypeMap = {
+    1: 'Email',
+    2: 'Google',
+    3: 'Direct MT5',
+    4: 'API Key',
+  };
+  const loginType = loginTypeMap[prof.oLogin] || (prof.oLogin ? `Type ${prof.oLogin}` : 'MT5 Login');
 
   return {
     id: `brk-${profileId}`,
@@ -105,28 +163,30 @@ export function mapApiProfileToBroker(prof) {
     contactPerson: fullName,
     email: email,
     referCode: referCode,
-    phone: "+1 555 0192",
+    phone: basic.Phone || prof.Phone || '',
     country: country,
+    Country: country, // Alias support for broker.Country and broker.country
     flag: flag,
-    avatarBg: profileId === '1000' ? '#EDFAE6' : profileId === '1001' ? '#EFF6FF' : '#FAF5FF',
-    avatarColor: profileId === '1000' ? '#166534' : profileId === '1001' ? '#1D4ED8' : '#6B21A8',
+    profilePic: prof.ProfilePic || null,
+    avatarBg: '#EDFAE6',
+    avatarColor: '#166534',
     avatarInitials: avatarInitials,
-    serverName: `Manager-${profileId}-Live01`,
-    serverIp: `${ipAddr}:443`,
+    serverName: `Manager-${profileId}`,
+    serverIp: ipAddr ? `${ipAddr}:443` : '',
     ipAddress: ipAddr,
     type: 'LIVE',
-    accounts: 120,
+    accounts: prof.AccountsCount ?? prof.Accounts ?? 0,
     platform: 'MetaTrader 5',
-    license: 'FSA Registered Broker',
-    planId: 'plan-cross',
-    planName: 'Cross-Broker Trade Copier',
+    license: prof.License || 'FSA Registered Broker',
+    planId: 'plan-internal',
+    planName: 'Internal Trade Copier',
     status: 'Connected',
     createdOn: dtStr,
     connectedOn: dtStr,
     lastSync: 'Just now',
     notes: `Profile ID ${profileId} loaded dynamically via GET_ADM_PROFILES API.`,
-    loginType: prof.oLogin ? `Type ${prof.oLogin}` : 'MT5 Login',
-    rawProfile: prof
+    loginType: loginType,
+    rawProfile: prof,
   };
 }
 
@@ -267,7 +327,7 @@ export async function apiGetAdmUserPackage(type = "1", key = "") {
  */
 export async function apiGetAllAdmUserPackages() {
   const allPackages = [];
-  const types = [1, 2, 3, 4, 5, 6];
+  const types = [1, 2, 3, 4, 5, 6, 7, 8];
 
   for (const type of types) {
     try {

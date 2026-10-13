@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSuperAdmin } from '../../context/SuperAdminContext';
 import CreatePackageModal from '../../components/modals/CreatePackageModal';
-import UserTypeUrlModal from '../../components/modals/UserTypeUrlModal';
 import { apiGetAdmUserPackage, apiDelAdmUserPackage } from '../../services/api';
 
 const SERVICE_TABS = [
@@ -11,7 +10,8 @@ const SERVICE_TABS = [
   { id: 'account-to-mt-group', typeId: 4, title: 'Account to MT Group', icon: 'bi-boxes' },
   { id: 'broker-data-shifter', typeId: 5, title: 'Broker Data Shifter', icon: 'bi-database-fill-gear' },
   { id: 'lp-bridge', typeId: 6, title: 'LP Bridge', icon: 'bi-hdd-network-fill' },
-  { id: 'mam-pamm', typeId: 7, title: 'MAM / PAMM', icon: 'bi-people-fill' },
+  { id: 'mamm', typeId: 7, title: 'MAMM', icon: 'bi-people-fill' },
+  { id: 'pamm', typeId: 8, title: 'PAMM', icon: 'bi-people-fill' },
 ];
 
 export default function SubscriptionsPage() {
@@ -28,14 +28,13 @@ export default function SubscriptionsPage() {
   // Modal states
   const [isCreatePackageOpen, setIsCreatePackageOpen] = useState(false);
   const [editingPackage, setEditingPackage] = useState(null);
-  const [isUrlModalOpen, setIsUrlModalOpen] = useState(false);
 
-  // Fetch packages for all copier types (1-7)
+  // Fetch packages for all copier types (1-8)
   const fetchAllTypePackages = useCallback(async () => {
     setLoading(true);
     try {
       const map = {};
-      const typeIds = [1, 2, 3, 4, 5, 6, 7];
+      const typeIds = [1, 2, 3, 4, 5, 6, 7, 8];
       await Promise.all(
         typeIds.map(async (typeId) => {
           try {
@@ -104,13 +103,6 @@ export default function SubscriptionsPage() {
         onPackageCreated={() => fetchAllTypePackages()}
       />
 
-      {/* User Type URLs Modal */}
-      <UserTypeUrlModal
-        isOpen={isUrlModalOpen}
-        onClose={() => setIsUrlModalOpen(false)}
-        initialProfileId="10001"
-      />
-
       {/* Page Header */}
       <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
         <div>
@@ -123,20 +115,11 @@ export default function SubscriptionsPage() {
             </span>
           </div>
           <span className="text-secondary" style={{ fontSize: '0.85rem' }}>
-            Official TradeCopier modules. Assign subscriptions to approved brokerages and manage copier URLs.
+            Official Trade Copier packages for managing broker subscriptions and access.
           </span>
         </div>
 
         <div className="d-flex align-items-center gap-2">
-          <button 
-            type="button" 
-            className="btn btn-outline-primary fw-semibold d-flex align-items-center gap-1.5"
-            onClick={() => setIsUrlModalOpen(true)}
-          >
-            <i className="bi bi-link-45deg fs-5"></i>
-            <span>User Type URLs API</span>
-          </button>
-
           <button 
             type="button" 
             className="btn btn-neon-primary shadow-sm d-flex align-items-center gap-1.5"

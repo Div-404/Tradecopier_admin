@@ -9,9 +9,9 @@ const PACKAGE_TYPES = [
   { id: 3, code: "FUND_TO_MT_GRP", label: "Fund to MT Group" },
   { id: 4, code: "ACCOUNT_TO_MT_GRP", label: "Account to MT Group" },
   { id: 5, code: "DATA_MT_TO_MT", label: "Broker Data Shifter" },
-  { id: 6, code: "MT_ACC_TO_ANY_ACC", label: "Coverage Account (LP Bridge)" },
-  { id: 7, code: "MAMM", label: "MAM – Multi-Account Manager" },
-  { id: 8, code: "PAMM", label: "PAMM – Portfolio Manager" },
+  { id: 6, code: "MT_ACC_TO_ANY_ACC", label: "LP Bridge" },
+  { id: 7, code: "MAMM", label: "MAMM" },
+  { id: 8, code: "PAMM", label: "PAMM" },
 ];
 
 export default function CreatePackageModal({ isOpen, onClose, onPackageCreated, initialData = null, initialType = 1 }) {
@@ -162,9 +162,9 @@ export default function CreatePackageModal({ isOpen, onClose, onPackageCreated, 
               <h5 className="fw-bold text-dark m-0" style={{ fontSize: '1.2rem', letterSpacing: '-0.2px' }}>
                 {isEditing ? 'Edit Subscription Package' : 'Create Subscription Package'}
               </h5>
-              <div className="text-secondary mt-0.5" style={{ fontSize: '0.82rem' }}>
+              {/* <div className="text-secondary mt-0.5" style={{ fontSize: '0.82rem' }}>
                 Configure subscription parameters, broker account quotas, and copy routing type.
-              </div>
+              </div> */}
             </div>
           </div>
           <button 

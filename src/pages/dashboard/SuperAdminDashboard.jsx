@@ -59,7 +59,7 @@ export default function SuperAdminDashboard() {
 
   // Format timestamp strictly as MM/DD/YYYY hh:mm AM/PM (never "Today" or "Yesterday")
   const formatTimestamp = (dateInput) => {
-    if (!dateInput) return '10/01/2026 10:30 AM';
+    if (!dateInput) return '—';
 
     const str = String(dateInput).trim();
 
@@ -67,6 +67,19 @@ export default function SuperAdminDashboard() {
     const exactPattern = /^\d{2}\/\d{2}\/\d{4}\s+\d{1,2}:\d{2}\s+(AM|PM)$/i;
     if (exactPattern.test(str)) {
       return str;
+    }
+
+    // Handle "YYYY-MM-DD HH:mm:ss" like "2026-10-11 15:42:54"
+    const ymdMatch = str.match(/^(\d{4})-(\d{2})-(\d{2})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
+    if (ymdMatch) {
+      const year = ymdMatch[1];
+      const month = ymdMatch[2];
+      const day = ymdMatch[3];
+      let hours = parseInt(ymdMatch[4] || '0', 10);
+      const minutes = ymdMatch[5] || '00';
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12 || 12;
+      return `${month}/${day}/${year} ${String(hours).padStart(2, '0')}:${minutes} ${ampm}`;
     }
 
     // Handle "Today • 02:40 PM" or "Today"
@@ -159,7 +172,7 @@ export default function SuperAdminDashboard() {
         (broker.createdOn && broker.createdOn.toLowerCase().includes(searchTerm.toLowerCase())) ||
         (broker.contactPerson && broker.contactPerson.toLowerCase().includes(searchTerm.toLowerCase())) ||
         (broker.email && broker.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (broker.country && broker.country.toLowerCase().includes(searchTerm.toLowerCase()));
+        ((broker.country || broker.Country) && (broker.country || broker.Country).toLowerCase().includes(searchTerm.toLowerCase()));
 
       let matchesStatus = true;
       if (statusFilter === 'ALL') {
@@ -200,7 +213,7 @@ export default function SuperAdminDashboard() {
       <UserTypeUrlModal
         isOpen={isUrlModalOpen}
         onClose={() => setIsUrlModalOpen(false)}
-        initialProfileId={selectedBroker?.managerId || '10001'}
+        initialProfileId={selectedBroker?.managerId || (brokers[0]?.managerId || '1000')}
       />
 
       {/* Human-Touch Executive Header */}
@@ -245,7 +258,7 @@ export default function SuperAdminDashboard() {
       <div className="row g-3 row-cols-1 row-cols-sm-2 row-cols-xl-4 mb-4">
         
         {/* Metric 1: Total Registered Brokers */}
-        <div className="col">
+        <div className="col col-xl-4">
           <div 
             className="custom-card p-3.5 mb-0 h-100 hover-lift cursor-pointer"
             onClick={() => setStatusFilter('ALL')}
@@ -273,7 +286,7 @@ export default function SuperAdminDashboard() {
         </div>
 
         {/* Metric 2: Connected Platforms */}
-        <div className="col">
+        <div className="col col-xl-4">
           <div 
             className="custom-card p-3.5 mb-0 h-100 hover-lift cursor-pointer"
             onClick={() => setStatusFilter('Connected')}
@@ -304,7 +317,7 @@ export default function SuperAdminDashboard() {
         </div>
 
         {/* Metric 3: Disconnected Platforms */}
-        <div className="col">
+        <div className="col col-xl-4">
           <div 
             className="custom-card p-3.5 mb-0 h-100 hover-lift cursor-pointer"
             onClick={() => setStatusFilter('Disconnected')}
@@ -332,7 +345,7 @@ export default function SuperAdminDashboard() {
         </div>
 
         {/* Metric 4: Total Managed Accounts */}
-        <div className="col">
+        {/* <div className="col">
           <div 
             className="custom-card p-3.5 mb-0 h-100 hover-lift cursor-pointer"
             onClick={() => setStatusFilter('ALL')}
@@ -356,7 +369,7 @@ export default function SuperAdminDashboard() {
               <span>Replicating across active brokers</span>
             </div>
           </div>
-        </div>
+        </div> */}
 
       </div>
 
@@ -420,15 +433,15 @@ export default function SuperAdminDashboard() {
               </div>
 
               {/* GET_ADM_PROFILES API Fetch Button */}
-              <button
+              {/* <button
                 type="button"
                 className="btn btn-sm btn-outline-success fw-bold d-flex align-items-center gap-1.5"
                 onClick={handleSyncProfiles}
                 disabled={syncingProfiles}
               >
                 <i className={`bi bi-arrow-clockwise ${syncingProfiles ? 'spin' : ''}`}></i>
-                <span>GET_ADM_PROFILES API</span>
-              </button>
+                <span>Reload</span>
+              </button> */}
 
               {/* User Type URLs Modal Trigger Button */}
               <button
@@ -437,7 +450,7 @@ export default function SuperAdminDashboard() {
                 onClick={() => setIsUrlModalOpen(true)}
               >
                 <i className="bi bi-link-45deg fs-6"></i>
-                <span>User Type URLs API</span>
+                <span>URL Configuration</span>
               </button>
 
             </div>
@@ -473,11 +486,12 @@ export default function SuperAdminDashboard() {
                 ) : (
                   filteredBrokers.map((broker) => {
                     const isConnected = broker.status === 'Connected' || broker.status === 'Approved';
-                    const profileId = broker.profileId || `PRF-${broker.managerId || broker.id.replace('brk-', '')}`;
-                    const referCode = broker.referCode || `REF-${(broker.name || 'CODE').replace(/[^a-zA-Z]/g, '').slice(0, 4).toUpperCase()}88`;
-                    const loginType = broker.loginType || (broker.type === 'LIVE' ? 'Email' : 'Google');
-                    const ipAddress = broker.ipAddress || (broker.serverIp ? broker.serverIp.split(':')[0] : '198.51.100.45');
+                    const profileId = broker.profileId || broker.managerId || broker.id?.replace('brk-', '');
+                    const referCode = broker.referCode || '';
+                    const loginType = broker.loginType || 'MT5 Login';
+                    const ipAddress = broker.ipAddress || (broker.serverIp ? broker.serverIp.split(':')[0] : '');
                     const createdDate = broker.createdOn || broker.connectedOn || broker.registeredAt;
+                    const countryName = broker.country || broker.Country || '';
 
                     return (
                       <tr key={broker.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
@@ -515,7 +529,7 @@ export default function SuperAdminDashboard() {
                                 flexShrink: 0
                               }}
                             >
-                              {(broker.name || 'BR').substring(0, 2).toUpperCase()}
+                              {(broker.avatarInitials || (broker.name || 'BR').substring(0, 2)).toUpperCase()}
                             </div>
                             <div>
                               <div className="fw-bold text-dark" style={{ fontSize: '13.5px', lineHeight: '1.25' }}>
@@ -533,34 +547,38 @@ export default function SuperAdminDashboard() {
                         {/* 3. EMAIL */}
                         <td style={{ padding: '14px 20px', verticalAlign: 'middle' }}>
                           <span style={{ fontSize: '13px', color: '#475569' }}>
-                            {broker.email || 'admin@broker.com'}
+                            {broker.email || '—'}
                           </span>
                         </td>
 
                         {/* 4. REFER CODE */}
                         <td style={{ padding: '14px 20px', verticalAlign: 'middle' }}>
-                          <span 
-                            className="font-monospace fw-semibold"
-                            style={{ 
-                              fontSize: '12px',
-                              backgroundColor: '#F8FAFC',
-                              color: '#0F172A',
-                              padding: '4px 9px',
-                              borderRadius: '6px',
-                              border: '1px solid #E2E8F0',
-                              letterSpacing: '0.4px',
-                              display: 'inline-block'
-                            }}
-                          >
-                            {referCode}
-                          </span>
+                          {referCode ? (
+                            <span 
+                              className="font-monospace fw-semibold"
+                              style={{ 
+                                fontSize: '12px',
+                                backgroundColor: '#F8FAFC',
+                                color: '#0F172A',
+                                padding: '4px 9px',
+                                borderRadius: '6px',
+                                border: '1px solid #E2E8F0',
+                                letterSpacing: '0.4px',
+                                display: 'inline-block'
+                              }}
+                            >
+                              {referCode}
+                            </span>
+                          ) : (
+                            <span className="text-muted" style={{ fontSize: '13px' }}>—</span>
+                          )}
                         </td>
 
                         {/* 5. COUNTRY */}
                         <td style={{ padding: '14px 20px', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
                           <div className="d-flex align-items-center gap-2">
                             <span style={{ fontSize: '16px', lineHeight: 1 }}>{broker.flag || '🌐'}</span>
-                            <span style={{ fontSize: '13px', color: '#334155', fontWeight: 500 }}>{broker.country || 'Global'}</span>
+                            <span style={{ fontSize: '13px', color: '#334155', fontWeight: 500 }}>{countryName || '—'}</span>
                           </div>
                         </td>
 
@@ -601,20 +619,24 @@ export default function SuperAdminDashboard() {
 
                         {/* 8. IP ADDRESS */}
                         <td style={{ padding: '14px 20px', verticalAlign: 'middle' }}>
-                          <div className="d-inline-flex align-items-center gap-2">
-                            <span className="font-monospace text-dark" style={{ fontSize: '12.5px' }}>
-                              {ipAddress}
-                            </span>
-                            <button
-                              type="button"
-                              className="btn btn-sm p-0 text-secondary border-0"
-                              style={{ lineHeight: 1 }}
-                              title="Copy IP Address"
-                              onClick={() => handleCopyIp(ipAddress, broker.name)}
-                            >
-                              <i className="bi bi-clipboard" style={{ fontSize: '12px' }}></i>
-                            </button>
-                          </div>
+                          {ipAddress ? (
+                            <div className="d-inline-flex align-items-center gap-2">
+                              <span className="font-monospace text-dark" style={{ fontSize: '12.5px' }}>
+                                {ipAddress}
+                              </span>
+                              <button
+                                type="button"
+                                className="btn btn-sm p-0 text-secondary border-0"
+                                style={{ lineHeight: 1 }}
+                                title="Copy IP Address"
+                                onClick={() => handleCopyIp(ipAddress, broker.name)}
+                              >
+                                <i className="bi bi-clipboard" style={{ fontSize: '12px' }}></i>
+                              </button>
+                            </div>
+                          ) : (
+                            <span className="text-muted" style={{ fontSize: '12.5px' }}>—</span>
+                          )}
                         </td>
 
                         {/* 9. ACTION */}

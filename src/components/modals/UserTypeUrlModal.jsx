@@ -13,7 +13,9 @@ import {
 export default function UserTypeUrlModal({ isOpen, onClose, initialProfileId }) {
   const { brokers, showToast } = useSuperAdmin();
 
-  const [profileId, setProfileId] = useState(initialProfileId || '10001');
+  const [profileId, setProfileId] = useState(() => {
+    return initialProfileId || (brokers.length > 0 ? String(brokers[0].managerId || brokers[0].profileId || '1000') : '1000');
+  });
   const [urlsList, setUrlsList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -29,6 +31,7 @@ export default function UserTypeUrlModal({ isOpen, onClose, initialProfileId }) 
 
   // Fetch URLs on open / profile change
   const fetchUrls = async (pid) => {
+    if (!pid) return;
     setLoading(true);
     setError(null);
     try {
@@ -45,12 +48,26 @@ export default function UserTypeUrlModal({ isOpen, onClose, initialProfileId }) 
 
   useEffect(() => {
     if (isOpen) {
-      const pid = initialProfileId || '10001';
-      setProfileId(pid);
-      fetchUrls(pid);
+      let targetId = initialProfileId;
+      const matchesAny = brokers.some(b => String(b.managerId || b.profileId || b.id.replace('brk-', '')) === String(targetId));
+      if (!targetId || (!matchesAny && brokers.length > 0)) {
+        targetId = brokers[0]?.managerId || brokers[0]?.profileId || '1000';
+      }
+      targetId = String(targetId || '1000');
+      setProfileId(targetId);
+      fetchUrls(targetId);
       setShowForm(false);
     }
   }, [isOpen, initialProfileId]);
+
+  // Sync if brokers arrive after modal is opened
+  useEffect(() => {
+    if (isOpen && brokers.length > 0 && !brokers.some(b => String(b.managerId || b.profileId || b.id.replace('brk-', '')) === String(profileId))) {
+      const firstId = String(brokers[0].managerId || brokers[0].profileId || '1000');
+      setProfileId(firstId);
+      fetchUrls(firstId);
+    }
+  }, [brokers, isOpen]);
 
   if (!isOpen) return null;
 
@@ -147,48 +164,58 @@ export default function UserTypeUrlModal({ isOpen, onClose, initialProfileId }) 
               <i className="bi bi-link-45deg text-primary fs-4"></i>
               User Type URL Configuration
             </h5>
-            <div className="text-secondary mt-1" style={{ fontSize: '13px' }}>
+            {/* <div className="text-secondary mt-1" style={{ fontSize: '13px' }}>
               <code>GET_USER_TYPE_URL</code> · <code>ADD_EDIT_USER_TYPE_URL</code> · <code>DEL_USER_TYPE_URL</code>
-            </div>
+            </div> */}
           </div>
           <button type="button" className="btn-close shadow-none" onClick={onClose}></button>
         </div>
 
         {/* Profile Selector + Actions */}
-        <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3 p-3 bg-light rounded-3 border">
-          <div className="d-flex align-items-center gap-2" style={{ minWidth: '320px' }}>
+        <div className="d-flex flex-wrap align-items-end justify-content-between gap-2 mb-3 p-3 bg-light rounded-3 border">
+          {/* <div className="d-flex align-items-center gap-2" style={{ minWidth: '320px' }}>
             <label className="fw-bold text-dark mb-0" style={{ fontSize: '13px', whiteSpace: 'nowrap' }}>Profile ID:</label>
             <select
               className="form-select form-select-sm font-monospace fw-bold"
               value={profileId}
               onChange={(e) => handleProfileChange(e.target.value)}
-              style={{ maxWidth: '280px' }}
+              style={{ maxWidth: '300px' }}
             >
-              <option value="10001">10001 (Default DEV)</option>
-              <option value="1000">1000 (Sample)</option>
-              {brokers.map(b => {
-                const mid = b.managerId || b.id.replace('brk-', '');
-                if (mid === '10001' || mid === '1000') return null;
-                return <option key={b.id} value={mid}>{mid} — {b.name}</option>;
-              })}
+              {brokers.length === 0 ? (
+                <option value={profileId || "1000"}>
+                  {profileId || "1000"} — Broker
+                </option>
+              ) : (
+                brokers.map(b => {
+                  const mid = String(b.managerId || b.profileId || b.id.replace('brk-', ''));
+                  return (
+                    <option key={b.id || mid} value={mid}>
+                      {mid} — {b.name}
+                    </option>
+                  );
+                })
+              )}
+              {brokers.length > 0 && !brokers.some(b => String(b.managerId || b.profileId || b.id.replace('brk-', '')) === String(profileId)) && profileId && (
+                <option value={profileId}>{profileId} (Custom Profile)</option>
+              )}
             </select>
-          </div>
-          <div className="d-flex gap-2">
+          </div> */}
+          <div className="d-flex tems-end gap-1">
             <button
               type="button"
-              className="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1"
+              className="btn btn-sm btn-outline-secondary d-flex align-items-end gap-1"
               onClick={() => fetchUrls(profileId)}
               disabled={loading}
             >
               <i className={`bi bi-arrow-clockwise${loading ? ' spin' : ''}`}></i> Refresh
             </button>
-            <button
+            {/* <button
               type="button"
               className="btn btn-sm btn-success text-white fw-bold d-flex align-items-center gap-1"
               onClick={openAddForm}
             >
               <i className="bi bi-plus-circle-fill"></i> Add URL
-            </button>
+            </button> */}
           </div>
         </div>
 
@@ -380,7 +407,7 @@ export default function UserTypeUrlModal({ isOpen, onClose, initialProfileId }) 
         </div>
 
         {/* API Reference Footer */}
-        <div className="p-3 bg-light rounded-3 border" style={{ fontSize: '11.5px' }}>
+        {/* <div className="p-3 bg-light rounded-3 border" style={{ fontSize: '11.5px' }}>
           <div className="fw-bold text-dark mb-1">
             <i className="bi bi-code-slash text-primary me-1"></i> API Endpoints
           </div>
@@ -398,7 +425,7 @@ export default function UserTypeUrlModal({ isOpen, onClose, initialProfileId }) 
               <div className="text-muted">{"{ Key, Param1: Type, Param2: ProfileID }"}</div>
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Close */}
         <div className="d-flex justify-content-end mt-3 pt-2 border-top">
