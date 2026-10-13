@@ -5,9 +5,10 @@ import AddBrokerModal from '../../components/modals/AddBrokerModal';
 import BrokerDetailsModal from '../../components/modals/BrokerDetailsModal';
 import EditBrokerModal from '../../components/modals/EditBrokerModal';
 import UserTypeUrlModal from '../../components/modals/UserTypeUrlModal';
+import { getCountryFlag } from '../../services/api';
 
 export default function SuperAdminDashboard() {
-  const { brokers, packages, toggleBrokerConnection, approveBroker, cancelBroker, showToast, currentUser, fetchProfilesFromApi } = useSuperAdmin();
+  const { brokers, packages, toggleBrokerConnection, approveBroker, cancelBroker, showToast, currentUser, fetchProfilesFromApi, clientIp } = useSuperAdmin();
   const navigate = useNavigate();
 
   // Search & Filter state
@@ -489,12 +490,17 @@ export default function SuperAdminDashboard() {
                     const profileId = broker.profileId || broker.managerId || broker.id?.replace('brk-', '');
                     const referCode = broker.referCode || '';
                     const loginType = broker.loginType || 'MT5 Login';
-                    const ipAddress = broker.ipAddress || (broker.serverIp ? broker.serverIp.split(':')[0] : '');
+                    const ipAddress = broker.ipAddress || (broker.serverIp ? broker.serverIp.split(':')[0] : '') || clientIp || '';
                     const createdDate = broker.createdOn || broker.connectedOn || broker.registeredAt;
                     const countryName = broker.country || broker.Country || '';
 
                     return (
-                      <tr key={broker.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                      <tr 
+                        key={broker.id} 
+                        style={{ borderBottom: '1px solid #f1f5f9', cursor: 'pointer' }}
+                        onClick={() => handleOpenDetails(broker)}
+                        title="Click to view broker details"
+                      >
                         {/* 1. PROFILE ID */}
                         {/* <td style={{ padding: '14px 20px', verticalAlign: 'middle' }}>
                           <div className="d-flex align-items-center gap-2">
@@ -629,7 +635,10 @@ export default function SuperAdminDashboard() {
                                 className="btn btn-sm p-0 text-secondary border-0"
                                 style={{ lineHeight: 1 }}
                                 title="Copy IP Address"
-                                onClick={() => handleCopyIp(ipAddress, broker.name)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleCopyIp(ipAddress, broker.name);
+                                }}
                               >
                                 <i className="bi bi-clipboard" style={{ fontSize: '12px' }}></i>
                               </button>
@@ -677,8 +686,6 @@ export default function SuperAdminDashboard() {
                             >
                               Edit
                             </button>
-
-                           
                           </div>
                         </td>
                       </tr>

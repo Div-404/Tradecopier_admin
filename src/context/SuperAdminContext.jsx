@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { initialBrokers, initialSubscriptionPackages, initialTransactions } from '../mock/superAdminData';
-import { apiGetAdmProfiles, apiGetAdmUserPackage, apiGetAllAdmUserPackages, mapApiProfileToBroker } from '../services/api';
+import { apiGetAdmProfiles, apiGetAdmUserPackage, apiGetAllAdmUserPackages, mapApiProfileToBroker, apiGetClientIpAddress } from '../services/api';
 
 const SuperAdminContext = createContext(null);
 
@@ -72,12 +72,49 @@ export function SuperAdminProvider({ children }) {
     }
   });
 
+  // Client IP State from https://insurex.life:3001/kyc/getIpAddress
+  const [clientIp, setClientIp] = useState(null);
+
+  // Fetch client IP address
+  const fetchClientIp = async () => {
+    try {
+      const ip = await apiGetClientIpAddress();
+      if (ip) {
+        setClientIp(ip);
+        // Ensure brokers without an IP address show this client IP
+        setBrokers((prevBrokers) =>
+          prevBrokers.map((b) => {
+            if (!b.ipAddress) {
+              return {
+                ...b,
+                ipAddress: ip,
+                serverIp: b.serverIp || `${ip}:443`,
+              };
+            }
+            return b;
+          })
+        );
+        return ip;
+      }
+    } catch (err) {
+      console.warn("fetchClientIp error:", err);
+    }
+    return null;
+  };
+
   // API Profiles Loading Function (Pure Dynamic Data - No Static Mocks Mixed In)
   const fetchProfilesFromApi = async () => {
     try {
-      const data = await apiGetAdmProfiles(1, 50);
+      const [data, fetchedIp] = await Promise.all([
+        apiGetAdmProfiles(1, 50),
+        clientIp ? Promise.resolve(clientIp) : apiGetClientIpAddress(),
+      ]);
+      const activeIp = fetchedIp || clientIp;
+      if (activeIp && !clientIp) {
+        setClientIp(activeIp);
+      }
       if (data && Array.isArray(data.lstProfile) && data.lstProfile.length > 0) {
-        const apiBrokers = data.lstProfile.map(mapApiProfileToBroker);
+        const apiBrokers = data.lstProfile.map((prof) => mapApiProfileToBroker(prof, activeIp));
         // Pure dynamic data replacement: remove mock static brokers completely!
         setBrokers(apiBrokers);
         return data.lstProfile;
@@ -102,10 +139,11 @@ export function SuperAdminProvider({ children }) {
     return [];
   };
 
-  // Fetch API profiles & packages on mount
+  // Fetch API profiles, client IP & packages on mount
   useEffect(() => {
     let mounted = true;
     if (mounted) {
+      fetchClientIp();
       fetchProfilesFromApi();
       fetchPackagesFromApi();
     }
@@ -443,7 +481,9 @@ export function SuperAdminProvider({ children }) {
         showToast,
         resetDemoData,
         fetchProfilesFromApi,
-        fetchPackagesFromApi
+        fetchPackagesFromApi,
+        clientIp,
+        fetchClientIp
       }}
     >
       {children}

@@ -123,9 +123,9 @@ export function getCountryFlag(countryName) {
 
 /**
  * Helper to map GET_ADM_PROFILES API output into standard Broker data object
- * Strictly utilizes dynamic API properties from GET_ADM_PROFILES without mock/dummy values
+ * Strictly utilizes dynamic API properties from GET_ADM_PROFILES with client IP fallback
  */
-export function mapApiProfileToBroker(prof) {
+export function mapApiProfileToBroker(prof, clientIp = null) {
   const profileId = String(prof.Profile ?? prof.id ?? '');
   const basic = prof.oBasic || {};
   const firstName = basic.First || '';
@@ -139,8 +139,8 @@ export function mapApiProfileToBroker(prof) {
   const country = prof.Country || basic.Country || '';
   const flag = getCountryFlag(country);
 
-  // Real IP Address (no dummy fallback if null)
-  const ipAddr = basic.IPAddr || prof.IPAddr || '';
+  // Real IP Address (from profile, with fallback to client IP from getIpAddress API)
+  const ipAddr = basic.IPAddr || prof.IPAddr || clientIp || '';
 
   const avatarInitials = (
     (firstName.charAt(0) || fullName.charAt(0) || 'B') +
@@ -267,6 +267,23 @@ export async function apiDelUserTypeUrl(copierType, profileId, key = "") {
     Param2: String(profileId),
   });
   return result || { Result: false, MSG_USER: "Failed to delete configuration" };
+}
+
+/**
+ * GET_CLIENT_IP_ADDRESS
+ * GET https://insurex.life:3001/kyc/getIpAddress
+ * Response: { "success": true, "IP": "103.117.12.152", "ipVersion": "IPv4", "source": "req.ip" }
+ */
+export async function apiGetClientIpAddress() {
+  try {
+    const res = await fetch("https://insurex.life:3001/kyc/getIpAddress");
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data?.IP || data?.ip || null;
+  } catch (err) {
+    console.warn("apiGetClientIpAddress error:", err);
+    return null;
+  }
 }
 
 /**

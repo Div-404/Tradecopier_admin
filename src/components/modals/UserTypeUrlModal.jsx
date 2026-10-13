@@ -158,22 +158,92 @@ export default function UserTypeUrlModal({ isOpen, onClose, initialProfileId }) 
         }}
       >
         {/* Header */}
-        <div className="d-flex align-items-start justify-content-between mb-3 pb-3 border-bottom">
+        {/* <div className="d-flex align-items-start justify-content-between mb-3 pb-3 border-bottom">
           <div>
             <h5 className="fw-bold m-0 text-dark d-flex align-items-center gap-2" style={{ letterSpacing: '-0.3px' }}>
               <i className="bi bi-link-45deg text-primary fs-4"></i>
               User Type URL Configuration
             </h5>
-            {/* <div className="text-secondary mt-1" style={{ fontSize: '13px' }}>
-              <code>GET_USER_TYPE_URL</code> · <code>ADD_EDIT_USER_TYPE_URL</code> · <code>DEL_USER_TYPE_URL</code>
-            </div> */}
           </div>
+          <button
+    type="button"
+    className="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-2 px-3"
+    onClick={() => fetchUrls(profileId)}
+    disabled={loading}
+    title="Refresh URL list"
+  >
+    <i
+      className={`bi bi-arrow-clockwise${loading ? ' spin' : ''}`}
+    ></i>
+    Refresh
+  </button>
           <button type="button" className="btn-close shadow-none" onClick={onClose}></button>
-        </div>
+        </div> */}
+<div className="d-flex align-items-center justify-content-between mb-3 pb-3 border-bottom">
+  <div>
+    <h5
+      className="fw-bold m-0 text-dark d-flex align-items-center gap-2"
+      style={{ letterSpacing: '-0.3px' }}
+    >
+      <i className="bi bi-link-45deg text-primary fs-4"></i>
+      User Type URL Configuration
+    </h5>
+  </div>
+
+  <div className="d-flex align-items-center gap-2">
+    <button
+      type="button"
+      className="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-2"
+      onClick={() => fetchUrls(profileId)}
+      disabled={loading}
+      title="Refresh URL list"
+    >
+      <i className={`bi bi-arrow-clockwise${loading ? ' spin' : ''}`}></i>
+      Refresh
+    </button>
+
+    <button
+      type="button"
+      className="btn-close shadow-none"
+      onClick={onClose}
+      aria-label="Close"
+    ></button>
+  </div>
+</div>
+
+{/* URLs Table Header */}
+{/* <div className="d-flex align-items-center justify-content-between gap-3 mb-3">
+  <div>
+    <h6 className="fw-bold text-dark mb-1">
+      Configured URLs
+    </h6>
+    <small className="text-muted">
+      Manage user type URL configurations
+    </small>
+  </div>
+
+  <button
+    type="button"
+    className="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-2 px-3"
+    onClick={() => fetchUrls(profileId)}
+    disabled={loading}
+    title="Refresh URL list"
+  >
+    <i
+      className={`bi bi-arrow-clockwise${loading ? ' spin' : ''}`}
+    ></i>
+    Refresh
+  </button>
+</div> */}
+
+{/* URLs Table */}
+{/* <div className="border rounded-3 overflow-hidden mb-3">
+
+</div> */}
 
         {/* Profile Selector + Actions */}
-        <div className="d-flex flex-wrap align-items-end justify-content-between gap-2 mb-3 p-3 bg-light rounded-3 border">
-          {/* <div className="d-flex align-items-center gap-2" style={{ minWidth: '320px' }}>
+        {/* <div className="d-flex flex-wrap align-items-end justify-content-between gap-2 mb-3 p-3 bg-light rounded-3 border">
+          <div className="d-flex align-items-center gap-2" style={{ minWidth: '320px' }}>
             <label className="fw-bold text-dark mb-0" style={{ fontSize: '13px', whiteSpace: 'nowrap' }}>Profile ID:</label>
             <select
               className="form-select form-select-sm font-monospace fw-bold"
@@ -199,8 +269,8 @@ export default function UserTypeUrlModal({ isOpen, onClose, initialProfileId }) 
                 <option value={profileId}>{profileId} (Custom Profile)</option>
               )}
             </select>
-          </div> */}
-          <div className="d-flex tems-end gap-1">
+          </div>
+          <div className="ms-auto">
             <button
               type="button"
               className="btn btn-sm btn-outline-secondary d-flex align-items-end gap-1"
@@ -209,15 +279,15 @@ export default function UserTypeUrlModal({ isOpen, onClose, initialProfileId }) 
             >
               <i className={`bi bi-arrow-clockwise${loading ? ' spin' : ''}`}></i> Refresh
             </button>
-            {/* <button
+            <button
               type="button"
               className="btn btn-sm btn-success text-white fw-bold d-flex align-items-center gap-1"
               onClick={openAddForm}
             >
               <i className="bi bi-plus-circle-fill"></i> Add URL
-            </button> */}
+            </button>
           </div>
-        </div>
+        </div> */}
 
         {/* Error alert */}
         {error && (
@@ -233,7 +303,7 @@ export default function UserTypeUrlModal({ isOpen, onClose, initialProfileId }) 
             <div className="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
               <h6 className="m-0 fw-bold text-primary" style={{ fontSize: '13.5px' }}>
                 <i className="bi bi-pencil-square me-1"></i>
-                {urlsList.some(u => Number(u.Type) === Number(formData.type)) ? 'Edit' : 'Add'} User Type URL — Profile {profileId}
+                {urlsList.some(u => Number(u.Type) === Number(formData.type)) ? 'Edit' : 'Add'} User Type URL
               </h6>
               <button type="button" className="btn-close shadow-none" style={{ fontSize: '0.7rem' }} onClick={() => setShowForm(false)}></button>
             </div>
@@ -241,7 +311,7 @@ export default function UserTypeUrlModal({ isOpen, onClose, initialProfileId }) 
               {/* Type */}
               <div className="col-md-5">
                 <label className="form-label fw-bold" style={{ fontSize: '12px' }}>
-                  Copier Type (oInfo.Type) <span className="text-danger">*</span>
+                  Copier Type  <span className="text-danger">*</span>
                 </label>
                 <select
                   className="form-select form-select-sm"
@@ -257,7 +327,7 @@ export default function UserTypeUrlModal({ isOpen, onClose, initialProfileId }) 
               {/* Status */}
               <div className="col-md-4">
                 <label className="form-label fw-bold" style={{ fontSize: '12px' }}>
-                  Status (oInfo.oStatus) <span className="text-danger">*</span>
+                  Status <span className="text-danger">*</span>
                 </label>
                 <select
                   className="form-select form-select-sm"
@@ -284,7 +354,7 @@ export default function UserTypeUrlModal({ isOpen, onClose, initialProfileId }) 
               {/* URL */}
               <div className="col-12">
                 <label className="form-label fw-bold" style={{ fontSize: '12px' }}>
-                  URL (oInfo.URL) <span className="text-danger">*</span>
+                  URL<span className="text-danger">*</span>
                 </label>
                 <input
                   type="url"
@@ -300,7 +370,7 @@ export default function UserTypeUrlModal({ isOpen, onClose, initialProfileId }) 
               <button type="button" className="btn btn-sm btn-light border" onClick={() => setShowForm(false)}>Cancel</button>
               <button type="submit" className="btn btn-sm btn-primary text-white fw-bold px-4" disabled={loading}>
                 {loading ? <span className="spinner-border spinner-border-sm me-1"></span> : null}
-                Save (ADD_EDIT_USER_TYPE_URL)
+                Save
               </button>
             </div>
           </form>

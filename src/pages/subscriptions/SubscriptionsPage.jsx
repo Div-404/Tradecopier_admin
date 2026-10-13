@@ -182,7 +182,7 @@ export default function SubscriptionsPage() {
         {loading ? (
           <div className="text-center py-5 text-muted">
             <div className="spinner-border text-success mb-2" role="status"></div>
-            <div>Fetching packages for {activeTab.title} (GET_ADM_USER_PACKAGE)...</div>
+            <div>Fetching packages for {activeTab.title}...</div>
           </div>
         ) : tabPackages.length === 0 ? (
           /* Empty State when GET_ADM_USER_PACKAGE returns [] */
