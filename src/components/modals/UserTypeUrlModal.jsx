@@ -10,11 +10,11 @@ import {
   getStatusInfo,
 } from '../../services/api';
 
-export default function UserTypeUrlModal({ isOpen, onClose, initialProfileId }) {
-  const { brokers, showToast } = useSuperAdmin();
+export default function UserTypeUrlModal({ isOpen, onClose, initialProfileId, broker }) {
+  const { brokers, showToast, refreshBrokerPlanFromUrls } = useSuperAdmin();
 
   const [profileId, setProfileId] = useState(() => {
-    return initialProfileId || (brokers.length > 0 ? String(brokers[0].managerId || brokers[0].profileId || '1000') : '1000');
+    return initialProfileId || broker?.managerId || broker?.profileId || (brokers.length > 0 ? String(brokers[0].managerId || brokers[0].profileId || '1000') : '1000');
   });
   const [urlsList, setUrlsList] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -37,7 +37,11 @@ export default function UserTypeUrlModal({ isOpen, onClose, initialProfileId }) 
     try {
       const data = await apiGetUserTypeUrl(pid);
       // API returns { Profile, lstURL: [...] }
-      setUrlsList(Array.isArray(data.lstURL) ? data.lstURL : []);
+      const urls = Array.isArray(data?.lstURL) ? data.lstURL : [];
+      setUrlsList(urls);
+      if (refreshBrokerPlanFromUrls) {
+        refreshBrokerPlanFromUrls(pid);
+      }
     } catch (err) {
       console.error('GET_USER_TYPE_URL error:', err);
       setError(err.message);
@@ -48,26 +52,12 @@ export default function UserTypeUrlModal({ isOpen, onClose, initialProfileId }) 
 
   useEffect(() => {
     if (isOpen) {
-      let targetId = initialProfileId;
-      const matchesAny = brokers.some(b => String(b.managerId || b.profileId || b.id.replace('brk-', '')) === String(targetId));
-      if (!targetId || (!matchesAny && brokers.length > 0)) {
-        targetId = brokers[0]?.managerId || brokers[0]?.profileId || '1000';
-      }
-      targetId = String(targetId || '1000');
+      const targetId = String(initialProfileId || broker?.managerId || broker?.profileId || '1000');
       setProfileId(targetId);
       fetchUrls(targetId);
       setShowForm(false);
     }
-  }, [isOpen, initialProfileId]);
-
-  // Sync if brokers arrive after modal is opened
-  useEffect(() => {
-    if (isOpen && brokers.length > 0 && !brokers.some(b => String(b.managerId || b.profileId || b.id.replace('brk-', '')) === String(profileId))) {
-      const firstId = String(brokers[0].managerId || brokers[0].profileId || '1000');
-      setProfileId(firstId);
-      fetchUrls(firstId);
-    }
-  }, [brokers, isOpen]);
+  }, [isOpen, initialProfileId, broker]);
 
   if (!isOpen) return null;
 
@@ -144,72 +134,55 @@ export default function UserTypeUrlModal({ isOpen, onClose, initialProfileId }) 
   };
 
   return (
-    <div className="custom-modal-backdrop" onClick={onClose}>
+    <div className="custom-modal-backdrop">
       <div
         className="custom-modal-dialog modal-content"
         onClick={(e) => e.stopPropagation()}
         style={{
-          maxWidth: '860px',
-          borderRadius: '16px',
+          maxWidth: '960px',
+          width: '95%',
+          borderRadius: '20px',
           padding: '28px 32px',
           backgroundColor: '#ffffff',
-          boxShadow: '0 20px 40px -15px rgba(0,0,0,0.15)',
+          boxShadow: '0 25px 50px -12px rgba(15, 23, 42, 0.25)',
           border: '1px solid #e2e8f0',
         }}
       >
-        {/* Header */}
-        {/* <div className="d-flex align-items-start justify-content-between mb-3 pb-3 border-bottom">
+        <div className="d-flex align-items-center justify-content-between mb-3 pb-3 border-bottom">
           <div>
-            <h5 className="fw-bold m-0 text-dark d-flex align-items-center gap-2" style={{ letterSpacing: '-0.3px' }}>
+            <h5
+              className="fw-bold m-0 text-dark d-flex align-items-center gap-2"
+              style={{ letterSpacing: '-0.3px' }}
+            >
               <i className="bi bi-link-45deg text-primary fs-4"></i>
               User Type URL Configuration
             </h5>
+            {/* <div style={{ fontSize: '13px', color: '#64748b', marginTop: '2px' }}>
+              {broker?.name ? <strong className="text-dark me-1">{broker.name}</strong> : null}
+              {broker?.name ? '• ' : ''}Profile ID: <span className="font-monospace fw-bold text-dark">{profileId}</span>
+            </div> */}
           </div>
-          <button
-    type="button"
-    className="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-2 px-3"
-    onClick={() => fetchUrls(profileId)}
-    disabled={loading}
-    title="Refresh URL list"
-  >
-    <i
-      className={`bi bi-arrow-clockwise${loading ? ' spin' : ''}`}
-    ></i>
-    Refresh
-  </button>
-          <button type="button" className="btn-close shadow-none" onClick={onClose}></button>
-        </div> */}
-<div className="d-flex align-items-center justify-content-between mb-3 pb-3 border-bottom">
-  <div>
-    <h5
-      className="fw-bold m-0 text-dark d-flex align-items-center gap-2"
-      style={{ letterSpacing: '-0.3px' }}
-    >
-      <i className="bi bi-link-45deg text-primary fs-4"></i>
-      User Type URL Configuration
-    </h5>
-  </div>
 
-  <div className="d-flex align-items-center gap-2">
-    <button
-      type="button"
-      className="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-2"
-      onClick={() => fetchUrls(profileId)}
-      disabled={loading}
-      title="Refresh URL list"
-    >
-      <i className={`bi bi-arrow-clockwise${loading ? ' spin' : ''}`}></i>
-      Refresh
-    </button>
+          <div className="d-flex align-items-center gap-2">
+            <button
+              type="button"
+              className="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-2"
+              onClick={() => fetchUrls(profileId)}
+              disabled={loading}
+              title="Refresh URL list"
+            >
+              <i className={`bi bi-arrow-clockwise${loading ? ' spin' : ''}`}></i>
+              Refresh
+            </button>
 
-    <button
-      type="button"
-      className="btn-close shadow-none"
-      onClick={onClose}
-      aria-label="Close"
-    ></button>
-  </div>
-</div>
+            <button
+              type="button"
+              className="btn-close shadow-none"
+              onClick={onClose}
+              aria-label="Close"
+            ></button>
+          </div>
+        </div>
 
 {/* URLs Table Header */}
 {/* <div className="d-flex align-items-center justify-content-between gap-3 mb-3">

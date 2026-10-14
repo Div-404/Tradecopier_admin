@@ -1,6 +1,14 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { initialBrokers, initialSubscriptionPackages, initialTransactions } from '../mock/superAdminData';
-import { apiGetAdmProfiles, apiGetAdmUserPackage, apiGetAllAdmUserPackages, mapApiProfileToBroker, apiGetClientIpAddress } from '../services/api';
+import { 
+  apiGetAdmProfiles, 
+  apiGetAdmUserPackage, 
+  apiGetAllAdmUserPackages, 
+  mapApiProfileToBroker, 
+  apiGetClientIpAddress,
+  apiGetUserTypeUrl,
+  getCopierInfo
+} from '../services/api';
 
 const SuperAdminContext = createContext(null);
 
@@ -117,12 +125,70 @@ export function SuperAdminProvider({ children }) {
         const apiBrokers = data.lstProfile.map((prof) => mapApiProfileToBroker(prof, activeIp));
         // Pure dynamic data replacement: remove mock static brokers completely!
         setBrokers(apiBrokers);
+
+        // Option B: Link to their configured URL Copier Type (GET_USER_TYPE_URL)
+        // Dynamically query URLs for each broker to assign the exact package name
+        Promise.allSettled(
+          apiBrokers.map(async (broker) => {
+            const pId = broker.managerId || broker.profileId;
+            if (!pId) return null;
+            const res = await apiGetUserTypeUrl(pId);
+            const urls = Array.isArray(res?.lstURL) ? res.lstURL : [];
+            const planName = urls.length > 0
+              ? urls.map(u => getCopierInfo(u.Type).name).join(', ')
+              : 'No Package / URLs Configured';
+            const planId = urls.length > 0 ? `pkg-type-${urls[0].Type}` : null;
+            return { id: broker.id, planName, planId, configuredUrls: urls };
+          })
+        ).then((results) => {
+          setBrokers((prevBrokers) =>
+            prevBrokers.map((b) => {
+              const match = results.find(
+                (r) => r.status === 'fulfilled' && r.value && r.value.id === b.id
+              );
+              if (match && match.value) {
+                return {
+                  ...b,
+                  planName: match.value.planName,
+                  planId: match.value.planId,
+                  configuredUrls: match.value.configuredUrls,
+                };
+              }
+              return b;
+            })
+          );
+        });
+
         return data.lstProfile;
       }
     } catch (err) {
       console.error("GET_ADM_PROFILES API error:", err);
     }
     return [];
+  };
+
+  // Helper to re-fetch and update a single broker's package dynamically from their URLs
+  const refreshBrokerPlanFromUrls = async (profileId) => {
+    try {
+      const res = await apiGetUserTypeUrl(profileId);
+      const urls = Array.isArray(res?.lstURL) ? res.lstURL : [];
+      const planName = urls.length > 0
+        ? urls.map(u => getCopierInfo(u.Type).name).join(', ')
+        : 'No Package / URLs Configured';
+      const planId = urls.length > 0 ? `pkg-type-${urls[0].Type}` : null;
+      setBrokers((prev) =>
+        prev.map((b) => {
+          const pId = String(b.managerId || b.profileId || b.rawProfile?.Profile || '');
+          if (pId === String(profileId)) {
+            return { ...b, planName, planId, configuredUrls: urls };
+          }
+          return b;
+        })
+      );
+      return { planName, planId, urls };
+    } catch (e) {
+      console.warn('refreshBrokerPlanFromUrls error:', e);
+    }
   };
 
   // On-demand API Packages Loading Function (When [] mark as no package found)
@@ -482,6 +548,7 @@ export function SuperAdminProvider({ children }) {
         resetDemoData,
         fetchProfilesFromApi,
         fetchPackagesFromApi,
+        refreshBrokerPlanFromUrls,
         clientIp,
         fetchClientIp
       }}

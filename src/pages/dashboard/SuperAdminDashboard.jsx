@@ -54,6 +54,17 @@ export default function SuperAdminDashboard() {
     setIsEditOpen(true);
   };
 
+  const [urlModalProfileId, setUrlModalProfileId] = useState('');
+  const [urlModalBroker, setUrlModalBroker] = useState(null);
+
+  const handleOpenUrlConfig = (broker) => {
+    const raw = broker.rawProfile || broker;
+    const pid = String(raw.Profile ?? broker.profileId ?? broker.managerId ?? broker.id?.replace('brk-', '') ?? '1000');
+    setUrlModalProfileId(pid);
+    setUrlModalBroker(broker);
+    setIsUrlModalOpen(true);
+  };
+
   const handleToggleConnection = (broker) => {
     toggleBrokerConnection(broker.id);
   };
@@ -214,7 +225,8 @@ export default function SuperAdminDashboard() {
       <UserTypeUrlModal
         isOpen={isUrlModalOpen}
         onClose={() => setIsUrlModalOpen(false)}
-        initialProfileId={selectedBroker?.managerId || (brokers[0]?.managerId || '1000')}
+        initialProfileId={urlModalProfileId || selectedBroker?.managerId || (brokers[0]?.managerId || '1000')}
+        broker={urlModalBroker || selectedBroker}
       />
 
       {/* Human-Touch Executive Header */}
@@ -444,15 +456,7 @@ export default function SuperAdminDashboard() {
                 <span>Reload</span>
               </button> */}
 
-              {/* User Type URLs Modal Trigger Button */}
-              <button
-                type="button"
-                className="btn btn-sm btn-outline-primary fw-bold d-flex align-items-center gap-1.5"
-                onClick={() => setIsUrlModalOpen(true)}
-              >
-                <i className="bi bi-link-45deg fs-6"></i>
-                <span>URL Configuration</span>
-              </button>
+              {/* User Type URLs Modal Trigger - Removed from header */}
 
             </div>
           </div>
@@ -708,6 +712,32 @@ export default function SuperAdminDashboard() {
                             >
                               Edit
                             </button>
+
+                            <button
+                              type="button"
+                              className="btn btn-sm"
+                              style={{
+                                padding: '3px 10px',
+                                fontSize: '12px',
+                                fontWeight: 500,
+                                borderRadius: '6px',
+                                border: '1px solid #E2E8F0',
+                                backgroundColor: '#FFFFFF',
+                                color: '#0284c7',
+                                transition: 'all 0.15s ease',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '3px'
+                              }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleOpenUrlConfig(broker);
+                              }}
+                              title={`URL Configuration for ${brokerName}`}
+                            >
+                              <i className="bi bi-link-45deg" style={{ fontSize: '14px' }}></i>
+                              URL Config
+                            </button>
                           </div>
                         </td>
                       </tr>
@@ -860,6 +890,17 @@ export default function SuperAdminDashboard() {
                             Edit
                           </button>
 
+                          <button 
+                            type="button" 
+                            className="btn btn-sm btn-light border px-2 py-1 text-primary fw-medium d-inline-flex align-items-center gap-1"
+                            style={{ fontSize: '0.76rem' }}
+                            onClick={() => handleOpenUrlConfig(broker)}
+                            title={`URL Configuration for ${brokerName}`}
+                          >
+                            <i className="bi bi-link-45deg"></i>
+                            URL Config
+                          </button>
+
                           {isConnected ? (
                             <button 
                               type="button" 
@@ -896,7 +937,7 @@ export default function SuperAdminDashboard() {
             Showing <strong className="text-dark">{filteredBrokers.length}</strong> of {brokers.length} total broker platforms.
           </span>
           <div className="d-flex align-items-center gap-3 text-secondary">
-            <span><i className="bi bi-shield-check text-success me-1"></i>Active Manager Session Verification</span>
+            {/* <span><i className="bi bi-shield-check text-success me-1"></i>Active Manager Session Verification</span> */}
             <span><i className="bi bi-clock-history text-primary me-1"></i>Real-Time Account Sync</span>
           </div>
         </div>
