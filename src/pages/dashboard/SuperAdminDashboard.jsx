@@ -478,7 +478,7 @@ export default function SuperAdminDashboard() {
               <tbody>
                 {filteredBrokers.length === 0 ? (
                   <tr>
-                    <td colSpan="9" className="text-center py-5 text-secondary">
+                    <td colSpan="7" className="text-center py-5 text-secondary">
                       <i className="bi bi-search fs-2 d-block mb-2 text-muted"></i>
                       <div className="fw-semibold text-dark">No broker registrations found</div>
                       <span className="small text-muted">Try adjusting your status filter or search query.</span>
@@ -486,13 +486,29 @@ export default function SuperAdminDashboard() {
                   </tr>
                 ) : (
                   filteredBrokers.map((broker) => {
+                    const raw = broker.rawProfile || broker;
+                    const basic = raw.oBasic || broker.oBasic || {};
                     const isConnected = broker.status === 'Connected' || broker.status === 'Approved';
-                    const profileId = broker.profileId || broker.managerId || broker.id?.replace('brk-', '');
-                    const referCode = broker.referCode || '';
+                    const profileId = String(raw.Profile ?? broker.profileId ?? broker.managerId ?? broker.id?.replace('brk-', '') ?? '');
+                    
+                    const firstName = basic.First || broker.firstName || '';
+                    const lastName = basic.Last || broker.lastName || '';
+                    const brokerName = (firstName || lastName) 
+                      ? `${firstName} ${lastName}`.trim() 
+                      : (broker.name || raw.name || `Broker ${profileId}`);
+
+                    const email = basic.Email || raw.Email || broker.email || '';
+                    const referCode = raw.ReferCode || broker.referCode || '';
                     const loginType = broker.loginType || 'MT5 Login';
-                    const ipAddress = broker.ipAddress || (broker.serverIp ? broker.serverIp.split(':')[0] : '') || clientIp || '';
-                    const createdDate = broker.createdOn || broker.connectedOn || broker.registeredAt;
-                    const countryName = broker.country || broker.Country || '';
+                    const countryName = raw.Country || basic.Country || broker.country || broker.Country || '';
+                    const flag = getCountryFlag(countryName) || broker.flag || '🌐';
+                    const createdDate = raw.dtCreated?.Tm_Str || raw.dtCreated || broker.createdOn || broker.connectedOn || broker.registeredAt;
+                    const ipAddress = basic.IPAddr || raw.IPAddr || broker.ipAddress || (broker.serverIp ? broker.serverIp.split(':')[0] : '') || clientIp || '';
+
+                    const avatarInitials = (
+                      (firstName.charAt(0) || brokerName.charAt(0) || 'B') +
+                      (lastName.charAt(0) || (brokerName.split(' ')[1] ? brokerName.split(' ')[1].charAt(0) : 'R'))
+                    ).toUpperCase();
 
                     return (
                       <tr 
@@ -535,13 +551,13 @@ export default function SuperAdminDashboard() {
                                 flexShrink: 0
                               }}
                             >
-                              {(broker.avatarInitials || (broker.name || 'BR').substring(0, 2)).toUpperCase()}
+                              {avatarInitials}
                             </div>
                             <div>
                               <div className="fw-bold text-dark" style={{ fontSize: '13.5px', lineHeight: '1.25' }}>
-                                {broker.name}
+                                {brokerName}
                               </div>
-                              {broker.contactPerson && broker.contactPerson !== broker.name && (
+                              {broker.contactPerson && broker.contactPerson !== brokerName && (
                                 <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '2px', lineHeight: '1.2' }}>
                                   {broker.contactPerson}
                                 </div>
@@ -553,7 +569,7 @@ export default function SuperAdminDashboard() {
                         {/* 3. EMAIL */}
                         <td style={{ padding: '14px 20px', verticalAlign: 'middle' }}>
                           <span style={{ fontSize: '13px', color: '#475569' }}>
-                            {broker.email || '—'}
+                            {email || '—'}
                           </span>
                         </td>
 
@@ -583,7 +599,7 @@ export default function SuperAdminDashboard() {
                         {/* 5. COUNTRY */}
                         <td style={{ padding: '14px 20px', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
                           <div className="d-flex align-items-center gap-2">
-                            <span style={{ fontSize: '16px', lineHeight: 1 }}>{broker.flag || '🌐'}</span>
+                            <span style={{ fontSize: '16px', lineHeight: 1 }}>{flag}</span>
                             <span style={{ fontSize: '13px', color: '#334155', fontWeight: 500 }}>{countryName || '—'}</span>
                           </div>
                         </td>
@@ -637,7 +653,7 @@ export default function SuperAdminDashboard() {
                                 title="Copy IP Address"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  handleCopyIp(ipAddress, broker.name);
+                                  handleCopyIp(ipAddress, brokerName);
                                 }}
                               >
                                 <i className="bi bi-clipboard" style={{ fontSize: '12px' }}></i>
@@ -664,7 +680,10 @@ export default function SuperAdminDashboard() {
                                 color: '#2563EB',
                                 transition: 'all 0.15s ease'
                               }}
-                              onClick={() => handleOpenDetails(broker)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleOpenDetails(broker);
+                              }}
                             >
                               View
                             </button>
@@ -682,7 +701,10 @@ export default function SuperAdminDashboard() {
                                 color: '#475569',
                                 transition: 'all 0.15s ease'
                               }}
-                              onClick={() => handleOpenEdit(broker)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleOpenEdit(broker);
+                              }}
                             >
                               Edit
                             </button>
@@ -700,7 +722,28 @@ export default function SuperAdminDashboard() {
           <div className="p-3 p-xl-4 bg-light bg-opacity-40">
             <div className="row g-3 row-cols-1 row-cols-md-2 row-cols-xl-3">
               {filteredBrokers.map((broker) => {
+                const raw = broker.rawProfile || broker;
+                const basic = raw.oBasic || broker.oBasic || {};
                 const isConnected = broker.status === 'Connected' || broker.status === 'Approved';
+                const profileId = String(raw.Profile ?? broker.profileId ?? broker.managerId ?? broker.id?.replace('brk-', '') ?? '');
+                
+                const firstName = basic.First || broker.firstName || '';
+                const lastName = basic.Last || broker.lastName || '';
+                const brokerName = (firstName || lastName) 
+                  ? `${firstName} ${lastName}`.trim() 
+                  : (broker.name || raw.name || `Broker ${profileId}`);
+
+                const email = basic.Email || raw.Email || broker.email || '';
+                const referCode = raw.ReferCode || broker.referCode || '';
+                const countryName = raw.Country || basic.Country || broker.country || broker.Country || '';
+                const flag = getCountryFlag(countryName) || broker.flag || '🌐';
+                const createdDate = raw.dtCreated?.Tm_Str || raw.dtCreated || broker.createdOn || broker.connectedOn || broker.registeredAt;
+                const ipAddress = basic.IPAddr || raw.IPAddr || broker.ipAddress || (broker.serverIp ? broker.serverIp.split(':')[0] : '') || clientIp || '';
+
+                const avatarInitials = (
+                  (firstName.charAt(0) || brokerName.charAt(0) || 'B') +
+                  (lastName.charAt(0) || (brokerName.split(' ')[1] ? brokerName.split(' ')[1].charAt(0) : 'R'))
+                ).toUpperCase();
 
                 return (
                   <div className="col" key={broker.id}>
@@ -714,18 +757,19 @@ export default function SuperAdminDashboard() {
                             className="broker-avatar shadow-2xs"
                             style={{ 
                               backgroundColor: broker.avatarBg || '#EDFAE6',
-                              color: broker.avatarColor || '#166534'
+                              color: broker.avatarColor || '#166534',
+                              fontWeight: 700
                             }}
                           >
-                            {broker.name.substring(0, 2).toUpperCase()}
+                            {avatarInitials}
                           </div>
                           <div>
-                            <div className="d-flex align-items-center gap-1.5">
-                              <span className="fw-bold text-dark">{broker.name}</span>
-                              <span>{broker.flag || '🌐'}</span>
+                            <div className="d-flex align-items-center gap-1.5 flex-wrap">
+                              <span className="fw-bold text-dark">{brokerName}</span>
+                              {/* <span style={{ fontSize: '14px' }} title={countryName}>{flag}</span> */}
                             </div>
                             <div className="text-secondary font-monospace" style={{ fontSize: '0.74rem' }}>
-                              Manager ID: <strong>{broker.managerId || broker.id}</strong>
+                              Manager ID: <strong>{profileId}</strong>
                             </div>
                           </div>
                         </div>
@@ -747,39 +791,52 @@ export default function SuperAdminDashboard() {
                         </span>
                       </div>
 
-                      {/* Server & Accounts info */}
+                      {/* Server, Email, IP & Account Info */}
                       <div className="bg-light rounded-3 p-2.5 mb-3" style={{ fontSize: '0.78rem' }}>
                         <div className="d-flex justify-content-between text-secondary">
+                          <span>Email:</span>
+                          <span className="text-dark fw-medium text-truncate ms-2" style={{ maxWidth: '180px' }}>{email || '—'}</span>
+                        </div>
+                        {referCode && (
+                          <div className="d-flex justify-content-between text-secondary mt-1">
+                            <span>Refer Code:</span>
+                            <span className="font-monospace fw-semibold text-dark">{referCode}</span>
+                          </div>
+                        )}
+                        <div className="d-flex justify-content-between text-secondary mt-1">
+                          <span>Country:</span>
+                          <span className="fw-medium text-dark">{flag} {countryName || '—'}</span>
+                        </div>
+                        <div className="d-flex justify-content-between align-items-center text-secondary mt-1">
+                          <span>IP Address:</span>
+                          {ipAddress ? (
+                            <span className="font-monospace text-dark d-inline-flex align-items-center gap-1">
+                              {ipAddress}
+                              <button
+                                type="button"
+                                className="btn btn-sm p-0 text-secondary border-0"
+                                style={{ lineHeight: 1 }}
+                                title="Copy IP Address"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleCopyIp(ipAddress, brokerName);
+                                }}
+                              >
+                                <i className="bi bi-clipboard" style={{ fontSize: '11px' }}></i>
+                              </button>
+                            </span>
+                          ) : (
+                            <span className="text-muted">—</span>
+                          )}
+                        </div>
+                        <div className="d-flex justify-content-between text-secondary mt-1">
+                          <span>Created On:</span>
+                          <span className="text-dark font-tabular">{formatTimestamp(createdDate)}</span>
+                        </div>
+                        {/* <div className="d-flex justify-content-between text-secondary mt-1">
                           <span>Server:</span>
-                          <span className="fw-semibold text-dark">{broker.serverName}</span>
-                        </div>
-                        <div className="d-flex justify-content-between text-secondary mt-1">
-                          <span>Type:</span>
-                          <span 
-                            style={{ 
-                              padding: '1px 6px', 
-                              borderRadius: '4px', 
-                              fontSize: '10px', 
-                              fontWeight: 700, 
-                              backgroundColor: broker.type === 'LIVE' ? '#EBF8EE' : '#FEF9C3',
-                              color: broker.type === 'LIVE' ? '#16A34A' : '#CA8A04'
-                            }}
-                          >
-                            {broker.type}
-                          </span>
-                        </div>
-                        <div className="d-flex justify-content-between text-secondary mt-1">
-                          <span>Active Accounts:</span>
-                          <span className="fw-bold text-dark">{broker.accounts ?? 0}</span>
-                        </div>
-                        <div className="d-flex justify-content-between text-secondary mt-1">
-                          <span>Connected On:</span>
-                          <span className="text-dark font-tabular">{formatTimestamp(broker.connectedOn || broker.registeredAt)}</span>
-                        </div>
-                        <div className="d-flex justify-content-between text-secondary mt-1">
-                          <span>Last Sync:</span>
-                          <span className="text-secondary">{broker.lastSync}</span>
-                        </div>
+                          <span className="fw-semibold text-dark">{broker.serverName || `Manager-${profileId}`}</span>
+                        </div> */}
                       </div>
 
                       {/* Direct Actions in Card */}
