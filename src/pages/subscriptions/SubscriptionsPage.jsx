@@ -262,13 +262,13 @@ export default function SubscriptionsPage() {
                       <div className="col-6">
                         <div className="p-2.5 rounded-3" style={{ background: '#f0f7ff', border: '1px solid #e0f2fe' }}>
                           <div className="fw-bolder text-dark fs-5 mb-0">{master}</div>
-                          <div className="text-secondary fw-medium" style={{ fontSize: '0.75rem' }}>Master Accounts</div>
+                          <div className="text-secondary fw-medium" style={{ fontSize: '0.75rem' }}>Max Master Accounts</div>
                         </div>
                       </div>
                       <div className="col-6">
                         <div className="p-2.5 rounded-3" style={{ background: '#f0fdf4', border: '1px solid #dcfce7' }}>
                           <div className="fw-bolder text-dark fs-5 mb-0">{slave}</div>
-                          <div className="text-secondary fw-medium" style={{ fontSize: '0.75rem' }}>Investor Accounts</div>
+                          <div className="text-secondary fw-medium" style={{ fontSize: '0.75rem' }}>Max Investor Accounts</div>
                         </div>
                       </div>
                       <div className="col-6">

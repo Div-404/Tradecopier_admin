@@ -29,15 +29,6 @@ export default function LoginPage() {
     }, 400);
   };
 
-  const handleDemoLogin = () => {
-    setLoading(true);
-    setTimeout(() => {
-      login('superadmin@tradecopier.io', 'supersecret');
-      setLoading(false);
-      navigate('/dashboard');
-    }, 300);
-  };
-
   return (
     <div className="d-flex align-items-center justify-content-center min-vh-100 p-3">
       <div 
@@ -63,14 +54,14 @@ export default function LoginPage() {
             </span>
           </div>
           <p className="text-secondary small mb-0">
-            Multi-Broker Gateway & Commercial Subscription Command
+            Multi-Broker Trading Infrastructure & Management
           </p>
         </div>
 
         {/* Login Form */}
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
-            <label className="form-label">SuperAdmin Email</label>
+            <label className="form-label">Email</label>
             <div className="input-group">
               <span className="input-group-text bg-light text-secondary border-end-0">
                 <i className="bi bi-person-fill-lock"></i>
@@ -87,12 +78,7 @@ export default function LoginPage() {
           </div>
 
           <div className="mb-3">
-            <div className="d-flex justify-content-between align-items-center mb-1">
-              <label className="form-label m-0">Master Key / Password</label>
-              <span className="text-muted" style={{ fontSize: '0.75rem', cursor: 'pointer' }}>
-                Default: any password
-              </span>
-            </div>
+            <label className="form-label">Password</label>
             <div className="input-group">
               <span className="input-group-text bg-light text-secondary border-end-0">
                 <i className="bi bi-shield-lock-fill"></i>
@@ -126,7 +112,7 @@ export default function LoginPage() {
                 onChange={(e) => setRememberMe(e.target.checked)}
               />
               <label className="form-check-label text-secondary small" htmlFor="rememberMe">
-                Remember session
+                Remember me
               </label>
             </div>
             {/* <span className="text-success small fw-semibold">
@@ -137,7 +123,7 @@ export default function LoginPage() {
           {/* Primary Login Button */}
           <button 
             type="submit" 
-            className="btn btn-neon-primary w-100 py-2.5 mb-2 shadow-sm"
+            className="btn btn-neon-primary w-100 py-2.5 shadow-sm"
             disabled={loading}
           >
             {loading ? (
@@ -146,17 +132,6 @@ export default function LoginPage() {
               <i className="bi bi-box-arrow-in-right"></i>
             )}
             <span>Sign In to SuperAdmin</span>
-          </button>
-
-          {/* 1-Click Demo Login */}
-          <button 
-            type="button" 
-            className="btn btn-light-custom w-100 py-2 text-dark d-flex align-items-center justify-content-center gap-2 mt-2"
-            onClick={handleDemoLogin}
-            disabled={loading}
-          >
-            <i className="bi bi-lightning-charge-fill text-warning"></i>
-            <span>Instant Demo 1-Click Login</span>
           </button>
         </form>
 

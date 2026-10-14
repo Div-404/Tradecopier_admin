@@ -768,9 +768,9 @@ export default function SuperAdminDashboard() {
                               <span className="fw-bold text-dark">{brokerName}</span>
                               {/* <span style={{ fontSize: '14px' }} title={countryName}>{flag}</span> */}
                             </div>
-                            <div className="text-secondary font-monospace" style={{ fontSize: '0.74rem' }}>
+                            {/* <div className="text-secondary font-monospace" style={{ fontSize: '0.74rem' }}>
                               Manager ID: <strong>{profileId}</strong>
-                            </div>
+                            </div> */}
                           </div>
                         </div>
                         <span 

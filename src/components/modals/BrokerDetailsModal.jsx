@@ -194,9 +194,9 @@ export default function BrokerDetailsModal({ broker, isOpen, onClose }) {
           {activeTab === 'urls' && (
             <div>
               <div className="d-flex align-items-center justify-content-between mb-3">
-                <div className="text-secondary" style={{ fontSize: '13px' }}>
+                {/* <div className="text-secondary" style={{ fontSize: '13px' }}>
                   Live data from <code>GET_USER_TYPE_URL</code> for Profile <strong className="font-monospace">{profileId}</strong>
-                </div>
+                </div> */}
                 <div className="d-flex gap-2">
                   <button
                     type="button"
@@ -230,10 +230,10 @@ export default function BrokerDetailsModal({ broker, isOpen, onClose }) {
               {/* Add/Edit Form */}
               {showUrlForm && (
                 <form onSubmit={handleSaveUrl} className="p-3 mb-3 border rounded-3 bg-white shadow-sm">
-                  <h6 className="fw-bold text-primary mb-2" style={{ fontSize: '13px' }}>
+                  {/* <h6 className="fw-bold text-primary mb-2" style={{ fontSize: '13px' }}>
                     <i className="bi bi-pencil-square me-1"></i>
                     Add/Edit URL — Profile {profileId}
-                  </h6>
+                  </h6> */}
                   <div className="row g-2">
                     <div className="col-md-4">
                       <label className="form-label mb-1 fw-semibold" style={{ fontSize: '11px' }}>Type</label>

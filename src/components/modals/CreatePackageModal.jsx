@@ -218,7 +218,7 @@ export default function CreatePackageModal({ isOpen, onClose, onPackageCreated, 
                 <div className="p-3 rounded-3 border bg-white" style={{ borderColor: '#e2e8f0' }}>
                   <label className="form-label fw-bold text-dark mb-2 d-flex align-items-center gap-1.5" style={{ fontSize: '0.85rem' }}>
                     <i className="bi bi-person-fill text-primary" style={{ fontSize: '0.95rem' }}></i>
-                    Master Accounts
+                    Max Master Accounts
                   </label>
                   <input 
                     type="number" 
@@ -237,7 +237,7 @@ export default function CreatePackageModal({ isOpen, onClose, onPackageCreated, 
                 <div className="p-3 rounded-3 border bg-white" style={{ borderColor: '#e2e8f0' }}>
                   <label className="form-label fw-bold text-dark mb-2 d-flex align-items-center gap-1.5" style={{ fontSize: '0.85rem' }}>
                     <i className="bi bi-people-fill text-success" style={{ fontSize: '0.95rem' }}></i>
-                    Investor Accounts <span className="text-muted fw-normal" style={{ fontSize: '0.8rem' }}>(Slave)</span>
+                    Max Investor Accounts <span className="text-muted fw-normal" style={{ fontSize: '0.8rem' }}>(Slave)</span>
                   </label>
                   <input 
                     type="number" 
