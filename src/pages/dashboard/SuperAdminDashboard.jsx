@@ -465,19 +465,17 @@ export default function SuperAdminDashboard() {
         {/* Table View */}
         {viewMode === 'table' ? (
           <div className="table-responsive">
-            <table className="table align-middle mb-0">
+            <table className="table table-hover align-middle mb-0" style={{ width: '100%', minWidth: '940px' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid #edf2f7' }}>
-  {/* <th style={{ color: '#475569', fontSize: '11px', fontWeight: 700, letterSpacing: '0.6px', textTransform: 'uppercase', padding: '14px 20px', borderBottom: '1px solid #edf2f7' }}>PROFILE ID</th> */}
-  <th style={{ color: '#475569', fontSize: '11px', fontWeight: 700, letterSpacing: '0.6px', textTransform: 'uppercase', padding: '14px 20px', borderBottom: '1px solid #edf2f7' }}>NAME</th>
-  <th style={{ color: '#475569', fontSize: '11px', fontWeight: 700, letterSpacing: '0.6px', textTransform: 'uppercase', padding: '14px 20px', borderBottom: '1px solid #edf2f7' }}>EMAIL</th>
-  <th style={{ color: '#475569', fontSize: '11px', fontWeight: 700, letterSpacing: '0.6px', textTransform: 'uppercase', padding: '14px 20px', borderBottom: '1px solid #edf2f7' }}>REFER CODE</th>
-  <th style={{ color: '#475569', fontSize: '11px', fontWeight: 700, letterSpacing: '0.6px', textTransform: 'uppercase', padding: '14px 20px', borderBottom: '1px solid #edf2f7' }}>COUNTRY</th>
-  {/* <th style={{ color: '#475569', fontSize: '11px', fontWeight: 700, letterSpacing: '0.6px', textTransform: 'uppercase', padding: '14px 20px', borderBottom: '1px solid #edf2f7' }}>LOGIN TYPE</th> */}
-  <th style={{ color: '#475569', fontSize: '11px', fontWeight: 700, letterSpacing: '0.6px', textTransform: 'uppercase', padding: '14px 20px', borderBottom: '1px solid #edf2f7' }}>CREATED ON</th>
-  <th style={{ color: '#475569', fontSize: '11px', fontWeight: 700, letterSpacing: '0.6px', textTransform: 'uppercase', padding: '14px 20px', borderBottom: '1px solid #edf2f7' }}>IP ADDRESS</th>
-  <th style={{ color: '#475569', fontSize: '11px', fontWeight: 700, letterSpacing: '0.6px', textTransform: 'uppercase', padding: '14px 20px', borderBottom: '1px solid #edf2f7' }}>ACTION</th>
-</tr>
+                  <th style={{ color: '#475569', fontSize: '11px', fontWeight: 700, letterSpacing: '0.6px', textTransform: 'uppercase', padding: '14px 20px', borderBottom: '1px solid #edf2f7', width: '22%' }}>NAME</th>
+                  <th style={{ color: '#475569', fontSize: '11px', fontWeight: 700, letterSpacing: '0.6px', textTransform: 'uppercase', padding: '14px 20px', borderBottom: '1px solid #edf2f7', width: '20%' }}>EMAIL</th>
+                  <th style={{ color: '#475569', fontSize: '11px', fontWeight: 700, letterSpacing: '0.6px', textTransform: 'uppercase', padding: '14px 20px', borderBottom: '1px solid #edf2f7', width: '13%' }}>REFER CODE</th>
+                  <th style={{ color: '#475569', fontSize: '11px', fontWeight: 700, letterSpacing: '0.6px', textTransform: 'uppercase', padding: '14px 20px', borderBottom: '1px solid #edf2f7', width: '12%' }}>COUNTRY</th>
+                  <th style={{ color: '#475569', fontSize: '11px', fontWeight: 700, letterSpacing: '0.6px', textTransform: 'uppercase', padding: '14px 20px', borderBottom: '1px solid #edf2f7', width: '14%' }}>CREATED ON</th>
+                  <th style={{ color: '#475569', fontSize: '11px', fontWeight: 700, letterSpacing: '0.6px', textTransform: 'uppercase', padding: '14px 20px', borderBottom: '1px solid #edf2f7', width: '10%' }}>IP ADDRESS</th>
+                  <th style={{ color: '#475569', fontSize: '11px', fontWeight: 700, letterSpacing: '0.6px', textTransform: 'uppercase', padding: '14px 24px', borderBottom: '1px solid #edf2f7', textAlign: 'right', width: '9%' }}>ACTION</th>
+                </tr>
               </thead>
               <tbody>
                 {filteredBrokers.length === 0 ? (
@@ -668,20 +666,16 @@ export default function SuperAdminDashboard() {
                           )}
                         </td>
 
-                        {/* 9. ACTION */}
-                        <td style={{ padding: '14px 20px', verticalAlign: 'middle' }}>
-                          <div className="d-flex align-items-center gap-2">
+                        {/* 9. ACTION (Right-aligned at last) */}
+                        <td style={{ padding: '14px 24px', verticalAlign: 'middle', textAlign: 'right', whiteSpace: 'nowrap' }}>
+                          <div className="d-flex align-items-center justify-content-end gap-2">
                             <button
                               type="button"
-                              className="btn btn-sm"
+                              className="btn btn-sm btn-outline-primary fw-semibold"
                               style={{
-                                padding: '3px 12px',
+                                padding: '4px 12px',
                                 fontSize: '12px',
-                                fontWeight: 500,
                                 borderRadius: '6px',
-                                border: '1px solid #E2E8F0',
-                                backgroundColor: '#FFFFFF',
-                                color: '#2563EB',
                                 transition: 'all 0.15s ease'
                               }}
                               onClick={(e) => {
@@ -694,15 +688,11 @@ export default function SuperAdminDashboard() {
 
                             <button
                               type="button"
-                              className="btn btn-sm"
+                              className="btn btn-sm btn-outline-secondary fw-semibold"
                               style={{
-                                padding: '3px 12px',
+                                padding: '4px 12px',
                                 fontSize: '12px',
-                                fontWeight: 500,
                                 borderRadius: '6px',
-                                border: '1px solid #E2E8F0',
-                                backgroundColor: '#FFFFFF',
-                                color: '#475569',
                                 transition: 'all 0.15s ease'
                               }}
                               onClick={(e) => {
@@ -715,19 +705,18 @@ export default function SuperAdminDashboard() {
 
                             <button
                               type="button"
-                              className="btn btn-sm"
+                              className="btn btn-sm fw-semibold"
                               style={{
-                                padding: '3px 10px',
+                                padding: '4px 12px',
                                 fontSize: '12px',
-                                fontWeight: 500,
                                 borderRadius: '6px',
-                                border: '1px solid #E2E8F0',
-                                backgroundColor: '#FFFFFF',
+                                border: '1px solid #0284c7',
+                                backgroundColor: '#f0f9ff',
                                 color: '#0284c7',
                                 transition: 'all 0.15s ease',
                                 display: 'inline-flex',
                                 alignItems: 'center',
-                                gap: '3px'
+                                gap: '4px'
                               }}
                               onClick={(e) => {
                                 e.stopPropagation();
@@ -778,113 +767,113 @@ export default function SuperAdminDashboard() {
                 return (
                   <div className="col" key={broker.id}>
                     <div 
-                      className="custom-card p-3.5 mb-0 h-100 hover-lift bg-white position-relative"
-                      style={{ borderTop: isConnected ? '3px solid #22c55e' : '3px solid #ef4444' }}
+                      className="custom-card p-3.5 mb-0 h-100 hover-lift bg-white position-relative d-flex flex-column justify-content-between"
+                      style={{ 
+                        borderRadius: '16px',
+                        border: '1px solid #e2e8f0',
+                        borderTop: isConnected ? '3px solid #22c55e' : '3px solid #ef4444',
+                        boxShadow: '0 4px 12px -2px rgba(15, 23, 42, 0.04)'
+                      }}
                     >
-                      <div className="d-flex align-items-start justify-content-between mb-3">
-                        <div className="d-flex align-items-center gap-2.5">
-                          <div 
-                            className="broker-avatar shadow-2xs"
-                            style={{ 
-                              backgroundColor: broker.avatarBg || '#EDFAE6',
-                              color: broker.avatarColor || '#166534',
-                              fontWeight: 700
+                      <div>
+                        <div className="d-flex align-items-start justify-content-between mb-3">
+                          <div className="d-flex align-items-center gap-2.5">
+                            <div 
+                              className="broker-avatar shadow-2xs"
+                              style={{ 
+                                backgroundColor: broker.avatarBg || '#EDFAE6',
+                                color: broker.avatarColor || '#166534',
+                                fontWeight: 700
+                              }}
+                            >
+                              {avatarInitials}
+                            </div>
+                            <div>
+                              <div className="d-flex align-items-center gap-1.5 flex-wrap">
+                                <span className="fw-bold text-dark">{brokerName}</span>
+                              </div>
+                            </div>
+                          </div>
+                          <span 
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              padding: '2px 8px',
+                              borderRadius: '9999px',
+                              fontSize: '11px',
+                              fontWeight: 600,
+                              backgroundColor: isConnected ? '#EBF8EE' : '#FEE8E8',
+                              color: isConnected ? '#16A34A' : '#DC2626'
                             }}
                           >
-                            {avatarInitials}
+                            <span style={{ width: 5, height: 5, borderRadius: '50%', backgroundColor: isConnected ? '#16A34A' : '#DC2626' }}></span>
+                            {broker.status}
+                          </span>
+                        </div>
+
+                        {/* Server, Email, IP & Account Info */}
+                        <div className="bg-light rounded-3 p-2.5 mb-3" style={{ fontSize: '0.78rem' }}>
+                          <div className="d-flex justify-content-between text-secondary">
+                            <span>Email:</span>
+                            <span className="text-dark fw-medium text-truncate ms-2" style={{ maxWidth: '180px' }}>{email || '—'}</span>
                           </div>
-                          <div>
-                            <div className="d-flex align-items-center gap-1.5 flex-wrap">
-                              <span className="fw-bold text-dark">{brokerName}</span>
-                              {/* <span style={{ fontSize: '14px' }} title={countryName}>{flag}</span> */}
+                          {referCode && (
+                            <div className="d-flex justify-content-between text-secondary mt-1">
+                              <span>Refer Code:</span>
+                              <span className="font-monospace fw-semibold text-dark">{referCode}</span>
                             </div>
-                            {/* <div className="text-secondary font-monospace" style={{ fontSize: '0.74rem' }}>
-                              Manager ID: <strong>{profileId}</strong>
-                            </div> */}
-                          </div>
-                        </div>
-                        <span 
-                          style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '4px',
-                            padding: '2px 8px',
-                            borderRadius: '9999px',
-                            fontSize: '11px',
-                            fontWeight: 600,
-                            backgroundColor: isConnected ? '#EBF8EE' : '#FEE8E8',
-                            color: isConnected ? '#16A34A' : '#DC2626'
-                          }}
-                        >
-                          <span style={{ width: 5, height: 5, borderRadius: '50%', backgroundColor: isConnected ? '#16A34A' : '#DC2626' }}></span>
-                          {broker.status}
-                        </span>
-                      </div>
-
-                      {/* Server, Email, IP & Account Info */}
-                      <div className="bg-light rounded-3 p-2.5 mb-3" style={{ fontSize: '0.78rem' }}>
-                        <div className="d-flex justify-content-between text-secondary">
-                          <span>Email:</span>
-                          <span className="text-dark fw-medium text-truncate ms-2" style={{ maxWidth: '180px' }}>{email || '—'}</span>
-                        </div>
-                        {referCode && (
-                          <div className="d-flex justify-content-between text-secondary mt-1">
-                            <span>Refer Code:</span>
-                            <span className="font-monospace fw-semibold text-dark">{referCode}</span>
-                          </div>
-                        )}
-                        <div className="d-flex justify-content-between text-secondary mt-1">
-                          <span>Country:</span>
-                          <span className="fw-medium text-dark">{flag} {countryName || '—'}</span>
-                        </div>
-                        <div className="d-flex justify-content-between align-items-center text-secondary mt-1">
-                          <span>IP Address:</span>
-                          {ipAddress ? (
-                            <span className="font-monospace text-dark d-inline-flex align-items-center gap-1">
-                              {ipAddress}
-                              <button
-                                type="button"
-                                className="btn btn-sm p-0 text-secondary border-0"
-                                style={{ lineHeight: 1 }}
-                                title="Copy IP Address"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleCopyIp(ipAddress, brokerName);
-                                }}
-                              >
-                                <i className="bi bi-clipboard" style={{ fontSize: '11px' }}></i>
-                              </button>
-                            </span>
-                          ) : (
-                            <span className="text-muted">—</span>
                           )}
+                          <div className="d-flex justify-content-between text-secondary mt-1">
+                            <span>Country:</span>
+                            <span className="fw-medium text-dark">{flag} {countryName || '—'}</span>
+                          </div>
+                          <div className="d-flex justify-content-between align-items-center text-secondary mt-1">
+                            <span>IP Address:</span>
+                            {ipAddress ? (
+                              <span className="font-monospace text-dark d-inline-flex align-items-center gap-1">
+                                {ipAddress}
+                                <button
+                                  type="button"
+                                  className="btn btn-sm p-0 text-secondary border-0"
+                                  style={{ lineHeight: 1 }}
+                                  title="Copy IP Address"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleCopyIp(ipAddress, brokerName);
+                                  }}
+                                >
+                                  <i className="bi bi-clipboard" style={{ fontSize: '11px' }}></i>
+                                </button>
+                              </span>
+                            ) : (
+                              <span className="text-muted">—</span>
+                            )}
+                          </div>
+                          <div className="d-flex justify-content-between text-secondary mt-1">
+                            <span>Created On:</span>
+                            <span className="text-dark font-tabular">{formatTimestamp(createdDate)}</span>
+                          </div>
                         </div>
-                        <div className="d-flex justify-content-between text-secondary mt-1">
-                          <span>Created On:</span>
-                          <span className="text-dark font-tabular">{formatTimestamp(createdDate)}</span>
-                        </div>
-                        {/* <div className="d-flex justify-content-between text-secondary mt-1">
-                          <span>Server:</span>
-                          <span className="fw-semibold text-dark">{broker.serverName || `Manager-${profileId}`}</span>
-                        </div> */}
                       </div>
 
-                      {/* Direct Actions in Card */}
-                      <div className="d-flex align-items-center justify-content-between pt-2 border-top">
+                      {/* Direct Actions in Card (Action at bottom) */}
+                      <div className="d-flex align-items-center justify-content-between pt-2.5 border-top flex-wrap gap-2 mt-auto">
                         <button 
                           type="button" 
-                          className="btn btn-sm btn-light border px-2.5 py-1 text-primary fw-semibold"
-                          style={{ fontSize: '0.76rem' }}
+                          className="btn btn-sm btn-outline-primary px-2.5 py-1 fw-semibold d-inline-flex align-items-center gap-1 mt-3"
+                          style={{ fontSize: '0.78rem', borderRadius: '6px' }}
                           onClick={() => handleOpenDetails(broker)}
                         >
-                          View Details
+                          <i className="bi bi-eye"></i>
+                          View
                         </button>
 
-                        <div className="d-flex align-items-center gap-1.5">
+                        <div className="d-flex align-items-center gap-2 flex-wrap">
                           <button 
                             type="button" 
-                            className="btn btn-sm btn-light border px-2.5 py-1"
-                            style={{ fontSize: '0.76rem' }}
+                            className="btn btn-sm btn-light border px-2.5 py-1 fw-medium"
+                            style={{ fontSize: '0.78rem', borderRadius: '6px' }}
                             onClick={() => handleOpenEdit(broker)}
                           >
                             Edit
@@ -892,8 +881,14 @@ export default function SuperAdminDashboard() {
 
                           <button 
                             type="button" 
-                            className="btn btn-sm btn-light border px-2 py-1 text-primary fw-medium d-inline-flex align-items-center gap-1"
-                            style={{ fontSize: '0.76rem' }}
+                            className="btn btn-sm px-2.5 py-1 fw-medium d-inline-flex align-items-center gap-1"
+                            style={{ 
+                              fontSize: '0.78rem', 
+                              borderRadius: '6px',
+                              border: '1px solid #0284c7',
+                              backgroundColor: '#f0f9ff',
+                              color: '#0284c7'
+                            }}
                             onClick={() => handleOpenUrlConfig(broker)}
                             title={`URL Configuration for ${brokerName}`}
                           >
@@ -901,11 +896,11 @@ export default function SuperAdminDashboard() {
                             URL Config
                           </button>
 
-                          {isConnected ? (
+                          {/* {isConnected ? (
                             <button 
                               type="button" 
-                              className="btn btn-sm btn-outline-danger px-2 py-1"
-                              style={{ fontSize: '0.76rem' }}
+                              className="btn btn-sm btn-outline-danger px-2.5 py-1 fw-medium"
+                              style={{ fontSize: '0.78rem', borderRadius: '6px' }}
                               onClick={() => handleToggleConnection(broker)}
                             >
                               Disconnect
@@ -913,16 +908,15 @@ export default function SuperAdminDashboard() {
                           ) : (
                             <button 
                               type="button" 
-                              className="btn btn-sm btn-outline-success px-2 py-1 fw-bold"
-                              style={{ fontSize: '0.76rem' }}
+                              className="btn btn-sm btn-outline-success px-2.5 py-1 fw-semibold"
+                              style={{ fontSize: '0.78rem', borderRadius: '6px' }}
                               onClick={() => handleToggleConnection(broker)}
                             >
                               Reconnect
                             </button>
-                          )}
+                          )} */}
                         </div>
                       </div>
-
                     </div>
                   </div>
                 );
