@@ -236,8 +236,8 @@ export default function SuperAdminDashboard() {
             <h4 className="fw-bolder text-dark m-0" style={{ letterSpacing: '-0.4px' }}>
               Broker Platform Registrations
             </h4>
-            <span className="badge rounded-pill bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2.5 py-1" style={{ fontSize: '0.72rem', fontWeight: 600 }}>
-              <i className="bi bi-shield-check me-1"></i> {stats.connectedBrokers} Connected Platforms
+            <span className="badge rounded-pill bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-1" style={{ fontSize: '0.72rem', fontWeight: 600 }}>
+              <i className="bi bi-shield-check me-2"></i> {stats.connectedBrokers} Connected Platforms
             </span>
           </div>
           <span className="text-secondary" style={{ fontSize: '0.85rem' }}>
@@ -273,7 +273,7 @@ export default function SuperAdminDashboard() {
         {/* Metric 1: Total Registered Brokers */}
         <div className="col col-xl-4">
           <div 
-            className="custom-card p-3.5 mb-0 h-100 hover-lift cursor-pointer"
+            className="custom-card p-4 mb-0 h-100 hover-lift cursor-pointer"
             onClick={() => setStatusFilter('ALL')}
             style={{ borderColor: statusFilter === 'ALL' ? '#52D300' : undefined }}
           >
@@ -301,7 +301,7 @@ export default function SuperAdminDashboard() {
         {/* Metric 2: Connected Platforms */}
         <div className="col col-xl-4">
           <div 
-            className="custom-card p-3.5 mb-0 h-100 hover-lift cursor-pointer"
+            className="custom-card p-4 mb-0 h-100 hover-lift cursor-pointer"
             onClick={() => setStatusFilter('Connected')}
             style={{ 
               borderColor: statusFilter === 'Connected' ? '#22c55e' : undefined,
@@ -332,7 +332,7 @@ export default function SuperAdminDashboard() {
         {/* Metric 3: Disconnected Platforms */}
         <div className="col col-xl-4">
           <div 
-            className="custom-card p-3.5 mb-0 h-100 hover-lift cursor-pointer"
+            className="custom-card p-4 mb-0 h-100 hover-lift cursor-pointer"
             onClick={() => setStatusFilter('Disconnected')}
             style={{ borderColor: statusFilter === 'Disconnected' ? '#ef4444' : undefined }}
           >
@@ -541,7 +541,7 @@ export default function SuperAdminDashboard() {
 
                         {/* 2. NAME */}
                         <td style={{ padding: '14px 20px', verticalAlign: 'middle' }}>
-                          <div className="d-flex align-items-center gap-2.5">
+                          <div className="d-flex align-items-center gap-2">
                             <div 
                               className="d-flex align-items-center justify-content-center rounded-circle fw-bold"
                               style={{ 
@@ -767,7 +767,7 @@ export default function SuperAdminDashboard() {
                 return (
                   <div className="col" key={broker.id}>
                     <div 
-                      className="custom-card p-3.5 mb-0 h-100 hover-lift bg-white position-relative d-flex flex-column justify-content-between"
+                      className="custom-card p-3 mb-0 h-100 hover-lift bg-white position-relative d-flex flex-column justify-content-between"
                       style={{ 
                         borderRadius: '16px',
                         border: '1px solid #e2e8f0',
@@ -777,7 +777,7 @@ export default function SuperAdminDashboard() {
                     >
                       <div>
                         <div className="d-flex align-items-start justify-content-between mb-3">
-                          <div className="d-flex align-items-center gap-2.5">
+                          <div className="d-flex align-items-center gap-2">
                             <div 
                               className="broker-avatar shadow-2xs"
                               style={{ 
@@ -789,7 +789,7 @@ export default function SuperAdminDashboard() {
                               {avatarInitials}
                             </div>
                             <div>
-                              <div className="d-flex align-items-center gap-1.5 flex-wrap">
+                              <div className="d-flex align-items-center gap-2 flex-wrap">
                                 <span className="fw-bold text-dark">{brokerName}</span>
                               </div>
                             </div>
@@ -813,7 +813,7 @@ export default function SuperAdminDashboard() {
                         </div>
 
                         {/* Server, Email, IP & Account Info */}
-                        <div className="bg-light rounded-3 p-2.5 mb-3" style={{ fontSize: '0.78rem' }}>
+                        <div className="bg-light rounded-3 p-3 mb-3" style={{ fontSize: '0.78rem' }}>
                           <div className="d-flex justify-content-between text-secondary">
                             <span>Email:</span>
                             <span className="text-dark fw-medium text-truncate ms-2" style={{ maxWidth: '180px' }}>{email || '—'}</span>
@@ -858,10 +858,10 @@ export default function SuperAdminDashboard() {
                       </div>
 
                       {/* Direct Actions in Card (Action at bottom) */}
-                      <div className="d-flex align-items-center justify-content-between pt-2.5 border-top flex-wrap gap-2 mt-auto">
+                      <div className="d-flex align-items-center justify-content-between pt-2 border-top flex-wrap gap-2 mt-auto">
                         <button 
                           type="button" 
-                          className="btn btn-sm btn-outline-primary px-2.5 py-1 fw-semibold d-inline-flex align-items-center gap-1 mt-3"
+                          className="btn btn-sm btn-outline-primary px-3 py-1 fw-semibold d-inline-flex align-items-center gap-1 mt-3"
                           style={{ fontSize: '0.78rem', borderRadius: '6px' }}
                           onClick={() => handleOpenDetails(broker)}
                         >
@@ -872,7 +872,7 @@ export default function SuperAdminDashboard() {
                         <div className="d-flex align-items-center gap-2 flex-wrap">
                           <button 
                             type="button" 
-                            className="btn btn-sm btn-light border px-2.5 py-1 fw-medium"
+                            className="btn btn-sm btn-light border px-3 py-1 fw-medium"
                             style={{ fontSize: '0.78rem', borderRadius: '6px' }}
                             onClick={() => handleOpenEdit(broker)}
                           >
@@ -881,7 +881,7 @@ export default function SuperAdminDashboard() {
 
                           <button 
                             type="button" 
-                            className="btn btn-sm px-2.5 py-1 fw-medium d-inline-flex align-items-center gap-1"
+                            className="btn btn-sm px-3 py-1 fw-medium d-inline-flex align-items-center gap-1"
                             style={{ 
                               fontSize: '0.78rem', 
                               borderRadius: '6px',

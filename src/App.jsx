@@ -5,6 +5,7 @@ import ProtectedRoute from './components/common/ProtectedRoute';
 import SuperAdminLayout from './layouts/SuperAdminLayout';
 import LoginPage from './pages/auth/LoginPage';
 import SuperAdminDashboard from './pages/dashboard/SuperAdminDashboard';
+import FinancePage from './pages/finance/FinancePage';
 import SubscriptionsPage from './pages/subscriptions/SubscriptionsPage';
 import PackageTransactionsPage from './pages/transactions/PackageTransactionsPage';
 
@@ -28,15 +29,21 @@ export default function App() {
             }
           />
 
+          {/* Finance Center (4 Tabs: Package, Subscription, Transaction, Reminder + Coupons) */}
           <Route
-            path="/subscriptions"
+            path="/finance"
             element={
               <ProtectedRoute>
                 <SuperAdminLayout>
-                  <SubscriptionsPage />
+                  <FinancePage />
                 </SuperAdminLayout>
               </ProtectedRoute>
             }
+          />
+
+          <Route
+            path="/subscriptions"
+            element={<Navigate to="/finance?tab=packages" replace />}
           />
 
           <Route

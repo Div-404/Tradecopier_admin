@@ -194,7 +194,7 @@ export default function BrokerDetailsModal({ broker, isOpen, onClose }) {
                 transition: 'all 0.2s ease'
               }}
             >
-              <div className="d-flex align-items-center justify-content-between mb-1.5">
+              <div className="d-flex align-items-center justify-content-between mb-2">
                 <span style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.6px', color: d.color || '#64748b', textTransform: 'uppercase' }}>
                   {d.label}
                 </span>
@@ -377,15 +377,15 @@ export default function BrokerDetailsModal({ broker, isOpen, onClose }) {
                 <div className="d-flex gap-2">
                   <button
                     type="button"
-                    className="btn btn-sm btn-light border d-flex align-items-center gap-1.5 px-3 py-1.5 fw-semibold shadow-sm"
+                    className="btn btn-sm btn-light border d-flex align-items-center gap-2 px-3 py-2 fw-semibold shadow-sm"
                     onClick={fetchUrls}
                     disabled={loadingUrls}
                   >
-                    <i className="bi bi-arrow-clockwise"></i> Refresh
+                    <i className="bi bi-arrow-clockwise me-2"></i> Refresh
                   </button>
                   <button
                     type="button"
-                    className="btn btn-sm text-white fw-bold d-flex align-items-center gap-1.5 px-3 py-1.5 shadow-sm"
+                    className="btn btn-sm text-white fw-bold d-flex align-items-center gap-2 px-3 py-2 shadow-sm"
                     style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', border: 'none' }}
                     onClick={() => {
                       const usedTypes = urlsList.map(u => Number(u.Type));

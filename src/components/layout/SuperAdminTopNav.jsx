@@ -45,7 +45,7 @@ export default function SuperAdminTopNav() {
                   <i className="bi bi-person-check-fill"></i>
                 </span>
                 <span>Dashboard</span>
-                {brokers.filter(b => b.status === 'Pending').length > 0 ? (
+                {/* {brokers.filter(b => b.status === 'Pending').length > 0 ? (
                   <span className="top-nav-badge" style={{ backgroundColor: '#FEF3C7', color: '#D97706', borderColor: '#FDE68A' }}>
                     {brokers.filter(b => b.status === 'Pending').length} Pending
                   </span>
@@ -53,21 +53,21 @@ export default function SuperAdminTopNav() {
                   <span className="top-nav-badge">
                     {brokers.length} Brokers
                   </span>
-                )}
+                )} */}
               </NavLink>
 
-              {/* Subscription Management Tab */}
+              {/* Finance Management Tab */}
               <NavLink 
-                to="/subscriptions" 
+                to="/finance" 
                 className={({ isActive }) => `top-nav-tab ${isActive ? 'active' : ''}`}
               >
                 <span className="top-nav-icon-box">
-                  <i className="bi bi-credit-card-2-front-fill"></i>
+                  <i className="bi bi-wallet2"></i>
                 </span>
-                <span>Subscription Packages</span>
-                <span className="top-nav-badge">
+                <span>Finance</span>
+                {/* <span className="top-nav-badge">
                   {packages.length} Plans
-                </span>
+                </span> */}
               </NavLink>
 
               {/* Package Transaction History Tab */}
@@ -79,9 +79,9 @@ export default function SuperAdminTopNav() {
                   <i className="bi bi-receipt"></i>
                 </span>
                 <span>Transaction History</span>
-                <span className="top-nav-badge">
+                {/* <span className="top-nav-badge">
                   {transactions?.length || 0}
-                </span>
+                </span> */}
               </NavLink>
 
             </nav>
@@ -93,7 +93,7 @@ export default function SuperAdminTopNav() {
             <div className="position-relative">
               <button 
                 type="button"
-                className="btn btn-link text-decoration-none p-1.5 d-flex align-items-center gap-2.5 border-0 bg-transparent shadow-none"
+                className="btn btn-link text-decoration-none p-2 d-flex align-items-center gap-2 border-0 bg-transparent shadow-none"
                 onClick={() => setShowProfileDropdown(!showProfileDropdown)}
                 style={{ cursor: 'pointer' }}
                 aria-expanded={showProfileDropdown}
@@ -105,7 +105,7 @@ export default function SuperAdminTopNav() {
                     width: '38px', 
                     height: '38px', 
                     background: 'linear-gradient(135deg, #EDFAE6 0%, #A3E6A3 100%)',
-                    border: '1.5px solid #86efac',
+                    border: '2px solid #86efac',
                     fontSize: '0.85rem'
                   }}
                 >
@@ -151,7 +151,7 @@ export default function SuperAdminTopNav() {
             {/* Mobile Hamburger Button */}
             <button 
               type="button"
-              className="btn btn-light d-md-none border p-1.5 px-2 rounded-3 shadow-2xs"
+              className="btn btn-light d-md-none border p-2 px-2 rounded-3 shadow-2xs"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle Navigation"
             >
@@ -183,14 +183,14 @@ export default function SuperAdminTopNav() {
               </NavLink>
 
               <NavLink 
-                to="/subscriptions" 
+                to="/finance" 
                 className={({ isActive }) => `top-nav-tab w-100 ${isActive ? 'active' : ''}`}
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <span className="top-nav-icon-box">
-                  <i className="bi bi-credit-card-2-front-fill"></i>
+                  <i className="bi bi-wallet2"></i>
                 </span>
-                <span>Subscription Management</span>
+                <span>Finance Management</span>
                 <span className="top-nav-badge ms-auto">{packages.length}</span>
               </NavLink>
 
@@ -202,7 +202,7 @@ export default function SuperAdminTopNav() {
                 <span className="top-nav-icon-box">
                   <i className="bi bi-receipt"></i>
                 </span>
-                <span>Package Transaction History</span>
+                <span>Transaction History</span>
                 <span className="top-nav-badge ms-auto">{transactions?.length || 0}</span>
               </NavLink>
 

@@ -123,13 +123,13 @@ export default function LoginPage() {
           {/* Primary Login Button */}
           <button 
             type="submit" 
-            className="btn btn-neon-primary w-100 py-2.5 shadow-sm"
+            className="btn btn-neon-primary w-100 py-2 shadow-sm d-flex align-items-center justify-content-center gap-2"
             disabled={loading}
           >
             {loading ? (
               <span className="spinner-border spinner-border-sm me-2" role="status"></span>
             ) : (
-              <i className="bi bi-box-arrow-in-right"></i>
+              <i className="bi bi-box-arrow-in-right me-2"></i>
             )}
             <span>Sign In to SuperAdmin</span>
           </button>

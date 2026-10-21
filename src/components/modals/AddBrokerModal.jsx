@@ -269,7 +269,7 @@ export default function AddBrokerModal({ isOpen, onClose }) {
 
               <div className="col-12">
                 <div className="p-3 rounded-3 bg-light border text-secondary" style={{ fontSize: '0.8rem' }}>
-                  <i className="bi bi-info-circle text-warning me-1"></i>
+                  <i className="bi bi-info-circle text-warning me-2"></i>
                   By default, newly registered broker platforms are saved with status <strong>Pending</strong>. You will be able to review, approve, or cancel them from the Broker Registrations table.
                 </div>
               </div>

@@ -376,3 +376,151 @@ export async function apiDelAdmUserPackage(pkgId, key = "") {
   });
   return result || { Result: false, MSG_USER: "User Packages been deleted" };
 }
+
+/* ==========================================================================
+   StructNxLib: Billing & Coupon Contracts Integration
+   ========================================================================== */
+
+/**
+ * BLC_STATUS enum mapping:
+ * NONE = 0, API_PENDING = 1, API_ACTIVE = 2, API_IN_ACTIVE = 3, API_REDEEM = 4
+ */
+export const BLC_STATUS_MAP = {
+  0: { id: 0, label: "None", color: "#64748b", bg: "#f1f5f9" },
+  1: { id: 1, label: "Pending", color: "#d97706", bg: "#fef3c7" },
+  2: { id: 2, label: "Active", color: "#166534", bg: "#dcfce7" },
+  3: { id: 3, label: "Expired", color: "#dc2626", bg: "#fee2e2" },
+  4: { id: 4, label: "Redeemed", color: "#2563eb", bg: "#dbeafe" },
+};
+
+/**
+ * BLC_TRANS_STATUS enum mapping:
+ * NONE = 0, PENDING = 1, FAILED = 2, SUCCESS = 3
+ */
+export const BLC_TRANS_STATUS_MAP = {
+  0: { id: 0, label: "None", color: "#64748b", bg: "#f1f5f9" },
+  1: { id: 1, label: "Pending", color: "#d97706", bg: "#fef3c7" },
+  2: { id: 2, label: "Failed", color: "#dc2626", bg: "#fee2e2" },
+  3: { id: 3, label: "Success", color: "#166534", bg: "#dcfce7" },
+};
+
+/**
+ * BIL_ADM_USER_SUBSCRIBED_GET_ALL
+ * POST /GET_ADM_USER_SUBSCRIBED
+ * Fetches all user subscriptions with BIL_USER_SNAP (Name, Email, Phone) and BIL_USER_SUBSCRIBED_PKG
+ */
+export async function apiGetAdmUserSubscribed(key = "") {
+  const result = await safeApiPost("GET_ADM_USER_SUBSCRIBED", {
+    Key: key,
+    Reserve1: "",
+    Reserve2: "",
+  });
+  return result || { Count: 0, lstSubscribe: [] };
+}
+
+/**
+ * BIL_USER_SUBSCRIBED_ADD
+ * POST /ADD_ADM_USER_SUBSCRIBED
+ */
+export async function apiAddAdmUserSubscribed(oPkg, key = "") {
+  const result = await safeApiPost("ADD_ADM_USER_SUBSCRIBED", {
+    Key: key,
+    oPkg: oPkg,
+  });
+  return result || { Result: false, MSG_USER: "Subscription updated" };
+}
+
+/**
+ * BIL_PKG_CUSTOMIZE_ADD
+ * POST /ADD_ADM_PKG_CUSTOMIZE
+ * Maps directly to Image 2 form:
+ * User (Profile_ID), Package (Pkg_ID), Amount (Amt), Validity (Validity_Day), Apply Coupan (CoupanApply), Status
+ */
+export async function apiAddAdmPkgCustomize({ profileId, pkgId, amt, pkgCode = "", coupanApply = 1, validityDays = 30, status = 2, key = "" }) {
+  const result = await safeApiPost("ADD_ADM_PKG_CUSTOMIZE", {
+    Key: key,
+    ID: 0,
+    oCust: {
+      Profile_ID: Number(profileId),
+      Pkg_ID: Number(pkgId),
+      Amt: Number(amt),
+      PkgCode: String(pkgCode),
+      CoupanApply: Number(coupanApply),
+      Validity_Day: Number(validityDays),
+      dtCreated: { Tm_Str: new Date().toISOString() },
+      Status: Number(status),
+    },
+  });
+  return result || { Result: false, MSG_USER: "Customized package created" };
+}
+
+/**
+ * BIL_ADM_PKG_CUSTOMIZE_GET
+ * POST /GET_ADM_PKG_CUSTOMIZE
+ */
+export async function apiGetAdmPkgCustomize(key = "") {
+  const result = await safeApiPost("GET_ADM_PKG_CUSTOMIZE", {
+    Key: key,
+  });
+  return result || { Count: 0, lstPkg: [] };
+}
+
+/**
+ * BIL_PKG_TRANS_GET_ALL
+ * POST /GET_ADM_PKG_TRANS
+ */
+export async function apiGetAdmPkgTrans(key = "") {
+  const result = await safeApiPost("GET_ADM_PKG_TRANS", {
+    Key: key,
+  });
+  return result || { Count: 0, lstGet: [] };
+}
+
+/**
+ * COUPANx_ADD
+ * POST /ADD_ADM_COUPON
+ * Structure: { Key, CoupanID, Coupan: { Value, Coupan, Comment, Status, Entry, Type, MinValue, MaxProfit } }
+ */
+export async function apiAddAdmCoupon({ coupan, value, comment = "", status = 2, entry = 1, type = 1, minValue = 0, maxProfit = 0, key = "" }) {
+  const result = await safeApiPost("ADD_ADM_COUPON", {
+    Key: key,
+    CoupanID: 0,
+    Coupan: {
+      Coupan: String(coupan).toUpperCase().trim(),
+      Value: Number(value),
+      Comment: String(comment),
+      Status: Number(status),
+      Entry: Number(entry),       // 1 = Single, 2 = Multiple
+      Type: Number(type),         // 1 = Percentage (%), 2 = Fixed Value ($)
+      MinValue: Number(minValue),
+      MaxProfit: Number(maxProfit),
+    },
+  });
+  return result || { Result: false, MSG_USER: "Coupon saved" };
+}
+
+/**
+ * COUPANx_GET
+ * POST /GET_ADM_COUPON
+ */
+export async function apiGetAdmCoupons(key = "") {
+  const result = await safeApiPost("GET_ADM_COUPON", {
+    Key: key,
+  });
+  return Array.isArray(result) ? result : (result?.lstCoupan || []);
+}
+
+/**
+ * COUPANx_VALIDATE
+ * POST /VALIDATE_COUPON
+ * Body: { Key, Amount, Code }
+ * Returns: { DisAmt, Dis, ID }
+ */
+export async function apiValidateCoupon(code, amount, key = "") {
+  const result = await safeApiPost("VALIDATE_COUPON", {
+    Key: key,
+    Amount: Number(amount),
+    Code: String(code).trim().toUpperCase(),
+  });
+  return result || null;
+}

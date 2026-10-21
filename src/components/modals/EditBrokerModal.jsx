@@ -233,7 +233,7 @@ export default function EditBrokerModal({ broker, isOpen, onClose }) {
           </div>
 
           {/* Footer */}
-          <div className="d-flex align-items-center justify-content-end gap-2 p-3.5 border-top border-light bg-light bg-opacity-50">
+          <div className="d-flex align-items-center justify-content-end gap-2 p-3 border-top border-light bg-light bg-opacity-50">
             <button 
               type="button" 
               className="btn btn-light-custom px-4" 

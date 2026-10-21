@@ -60,7 +60,7 @@ export default function SubscribeBrokerModal({ pkg, isOpen, onClose }) {
             <div className="p-3 rounded-3 mb-3 border bg-light">
               <div className="d-flex justify-content-between align-items-center mb-1">
                 <span className="fw-bold text-dark fs-6">{pkg.name}</span>
-                <span className="badge rounded-pill bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-0.5" style={{ fontSize: '0.72rem' }}>
+                <span className="badge rounded-pill bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1" style={{ fontSize: '0.72rem' }}>
                   {pkg.subtitle}
                 </span>
               </div>
@@ -102,7 +102,7 @@ export default function SubscribeBrokerModal({ pkg, isOpen, onClose }) {
 
             {selectedBroker && (
               <div className="p-3 rounded-3 bg-light border text-secondary" style={{ fontSize: '0.8rem' }}>
-                <i className="bi bi-info-circle text-primary me-1"></i>
+                <i className="bi bi-info-circle text-primary me-2"></i>
                 Activating this subscription will route trade permissions and quotas on <strong>{selectedBroker.serverName}</strong> for <strong>{pkg.name}</strong> immediately.
               </div>
             )}
@@ -120,7 +120,7 @@ export default function SubscribeBrokerModal({ pkg, isOpen, onClose }) {
             </button>
             <button 
               type="submit" 
-              className="btn btn-success text-white fw-bold px-4 d-inline-flex align-items-center gap-1.5"
+              className="btn btn-success text-white fw-bold px-4 d-inline-flex align-items-center gap-2"
               style={{ backgroundColor: '#22c55e', borderColor: '#22c55e' }}
             >
               <span>Activate Subscription</span>

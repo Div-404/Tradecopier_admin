@@ -103,10 +103,10 @@ export default function PackageTransactionsPage() {
         <div>
           <div className="d-flex align-items-center gap-2">
             <h4 className="fw-bolder text-dark m-0" style={{ letterSpacing: '-0.4px' }}>
-              Package Transaction History
+              Transaction History
             </h4>
-            <span className="badge rounded-pill bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2.5 py-1" style={{ fontSize: '0.72rem', fontWeight: 600 }}>
-              <i className="bi bi-shield-check me-1"></i> Audited Financial Ledger
+            <span className="badge rounded-pill bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-1" style={{ fontSize: '0.72rem', fontWeight: 600 }}>
+              <i className="bi bi-shield-check me-2"></i> Audited Financial Ledger
             </span>
           </div>
           <span className="text-secondary" style={{ fontSize: '0.85rem' }}>
@@ -117,7 +117,7 @@ export default function PackageTransactionsPage() {
         {/* Total Ledger Records Badge */}
         <div className="d-flex align-items-center gap-2">
           <span className="badge bg-white text-dark border px-3 py-2 rounded-3 shadow-2xs fw-bold" style={{ fontSize: '0.85rem' }}>
-            <i className="bi bi-receipt me-1.5 text-success"></i>
+            <i className="bi bi-receipt me-2 text-success"></i>
             {transactions.length} Total Transactions
           </span>
         </div>
@@ -128,7 +128,7 @@ export default function PackageTransactionsPage() {
         
         {/* Metric 1: Total Revenue Collected */}
         <div className="col">
-          <div className="custom-card p-3.5 mb-0 h-100 hover-lift">
+          <div className="custom-card p-4 mb-0 h-100 hover-lift">
             <div className="d-flex align-items-center justify-content-between mb-2">
               <span className="text-uppercase fw-bold text-secondary" style={{ fontSize: '0.7rem', letterSpacing: '0.5px' }}>
                 Total Revenue Collected
@@ -152,7 +152,7 @@ export default function PackageTransactionsPage() {
 
         {/* Metric 2: Invoices in Review */}
         <div className="col">
-          <div className="custom-card p-3.5 mb-0 h-100 hover-lift">
+          <div className="custom-card p-4 mb-0 h-100 hover-lift">
             <div className="d-flex align-items-center justify-content-between mb-2">
               <span className="text-uppercase fw-bold text-secondary" style={{ fontSize: '0.7rem', letterSpacing: '0.5px' }}>
                 Invoices in Review
@@ -176,7 +176,7 @@ export default function PackageTransactionsPage() {
 
         {/* Metric 3: Settled Success Rate */}
         <div className="col">
-          <div className="custom-card p-3.5 mb-0 h-100 hover-lift">
+          <div className="custom-card p-4 mb-0 h-100 hover-lift">
             <div className="d-flex align-items-center justify-content-between mb-2">
               <span className="text-uppercase fw-bold text-secondary" style={{ fontSize: '0.7rem', letterSpacing: '0.5px' }}>
                 Settlement Rate
@@ -202,7 +202,7 @@ export default function PackageTransactionsPage() {
 
         {/* Metric 4: Failed / Flagged */}
         <div className="col">
-          <div className="custom-card p-3.5 mb-0 h-100 hover-lift">
+          <div className="custom-card p-4 mb-0 h-100 hover-lift">
             <div className="d-flex align-items-center justify-content-between mb-2">
               <span className="text-uppercase fw-bold text-secondary" style={{ fontSize: '0.7rem', letterSpacing: '0.5px' }}>
                 Failed / Cancelled
@@ -235,7 +235,7 @@ export default function PackageTransactionsPage() {
             <div>
               <h5 className="fw-bolder text-dark m-0 d-flex align-items-center gap-2" style={{ letterSpacing: '-0.3px' }}>
                 <span>Subscription Transactions Ledger</span>
-                <span className="badge rounded-pill bg-light text-secondary border px-2 py-0.5" style={{ fontSize: '0.75rem' }}>
+                <span className="badge rounded-pill bg-light text-secondary border px-2 py-1" style={{ fontSize: '0.75rem' }}>
                   {filteredTransactions.length} of {transactions.length} records
                 </span>
               </h5>
@@ -293,7 +293,7 @@ export default function PackageTransactionsPage() {
               {/* Export CSV Button */}
               <button 
                 type="button" 
-                className="btn btn-sm btn-light border d-flex align-items-center gap-1.5 shadow-2xs"
+                className="btn btn-sm btn-light border d-flex align-items-center gap-2 shadow-2xs"
                 style={{ fontSize: '0.78rem' }}
                 onClick={handleExportCSV}
               >
@@ -381,7 +381,7 @@ export default function PackageTransactionsPage() {
 
                       {/* Payment Method */}
                       <td>
-                        <div className="d-flex align-items-center gap-1.5 text-dark fw-semibold" style={{ fontSize: '0.82rem' }}>
+                        <div className="d-flex align-items-center gap-2 text-dark fw-semibold" style={{ fontSize: '0.82rem' }}>
                           {txn.paymentMethod.includes('Stripe') && <i className="bi bi-credit-card-2-front-fill text-primary"></i>}
                           {txn.paymentMethod.includes('Crypto') && <i className="bi bi-currency-bitcoin text-warning"></i>}
                           {txn.paymentMethod.includes('Wire') && <i className="bi bi-bank text-secondary"></i>}
@@ -413,11 +413,11 @@ export default function PackageTransactionsPage() {
                       <td className="text-end">
                         <button 
                           type="button" 
-                          className="btn btn-sm btn-light border px-2.5 py-1 shadow-2xs text-secondary"
+                          className="btn btn-sm btn-light border px-3 py-1 shadow-2xs text-secondary"
                           onClick={() => handleOpenInvoice(txn)}
                           title="View Invoice Receipt"
                         >
-                          <i className="bi bi-receipt-cutoff me-1"></i>
+                          <i className="bi bi-receipt-cutoff me-2"></i>
                           <span>Invoice</span>
                         </button>
                       </td>

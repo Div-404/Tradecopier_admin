@@ -181,13 +181,8 @@ export default function CreatePackageModal({ isOpen, onClose, onPackageCreated, 
 
               {/* Package Name & Package Type */}
               <div className="col-md-6">
-                <label className="form-label fw-semibold text-dark mb-1 d-flex align-items-center justify-content-between" style={{ fontSize: '0.85rem' }}>
+                <label className="form-label fw-semibold text-dark mb-2 d-flex align-items-center justify-content-between" style={{ fontSize: '0.85rem' }}>
                   <span>Package Name</span>
-                  {/* {isEditing && (
-                    <span className="text-muted fw-normal" style={{ fontSize: '0.75rem' }}>
-                      <i className="bi bi-lock me-1"></i>Cannot be changed
-                    </span>
-                  )} */}
                 </label>
                 <input 
                   type="text" 
@@ -208,13 +203,8 @@ export default function CreatePackageModal({ isOpen, onClose, onPackageCreated, 
               </div>
 
               <div className="col-md-6">
-                <label className="form-label fw-semibold text-dark mb-1 d-flex align-items-center justify-content-between" style={{ fontSize: '0.85rem' }}>
+                <label className="form-label fw-semibold text-dark mb-2 d-flex align-items-center justify-content-between" style={{ fontSize: '0.85rem' }}>
                   <span>Package Type</span>
-                  {/* {isEditing && (
-                    <span className="text-muted fw-normal" style={{ fontSize: '0.75rem' }}>
-                      <i className="bi bi-lock me-1"></i>Cannot be changed
-                    </span>
-                  )} */}
                 </label>
                 <select 
                   className="form-select form-select-lg rounded-3 fs-6 px-3"
@@ -276,7 +266,7 @@ export default function CreatePackageModal({ isOpen, onClose, onPackageCreated, 
 
               {/* Trade Proportion & Risk Manager Toggle Switches */}
               <div className="col-md-6">
-                <label className="form-label fw-semibold text-dark mb-1.5" style={{ fontSize: '0.85rem' }}>
+                <label className="form-label fw-semibold text-dark mb-2" style={{ fontSize: '0.85rem' }}>
                   Trade Proportion
                 </label>
                 <div className="d-flex align-items-center gap-2">
@@ -305,7 +295,7 @@ export default function CreatePackageModal({ isOpen, onClose, onPackageCreated, 
               </div>
 
               <div className="col-md-6">
-                <label className="form-label fw-semibold text-dark mb-1.5" style={{ fontSize: '0.85rem' }}>
+                <label className="form-label fw-semibold text-dark mb-2" style={{ fontSize: '0.85rem' }}>
                   Risk Manager
                 </label>
                 <div className="d-flex align-items-center gap-2">
@@ -335,7 +325,7 @@ export default function CreatePackageModal({ isOpen, onClose, onPackageCreated, 
 
               {/* Subscription Fee & Duration */}
               <div className="col-md-6">
-                <label className="form-label fw-semibold text-dark mb-1" style={{ fontSize: '0.85rem' }}>
+                <label className="form-label fw-semibold text-dark mb-2" style={{ fontSize: '0.85rem' }}>
                   Subscription Fee
                 </label>
                 <div className="input-group">
@@ -354,10 +344,10 @@ export default function CreatePackageModal({ isOpen, onClose, onPackageCreated, 
               </div>
 
               <div className="col-md-6">
-                <label className="form-label fw-semibold text-dark mb-1" style={{ fontSize: '0.85rem' }}>
+                <label className="form-label fw-semibold text-dark mb-2" style={{ fontSize: '0.85rem' }}>
                   Duration (Days)
                 </label>
-                <div className="input-group mb-1.5">
+                <div className="input-group mb-2">
                   <span className="input-group-text bg-light text-secondary border-end-0 rounded-start-3" style={{ borderColor: '#e2e8f0' }}>
                     <i className="bi bi-calendar3"></i>
                   </span>
@@ -379,7 +369,7 @@ export default function CreatePackageModal({ isOpen, onClose, onPackageCreated, 
                       <button
                         key={d}
                         type="button"
-                        className="btn btn-sm px-2.5 py-0.5 rounded-pill fw-medium transition-all"
+                        className="btn btn-sm px-3 py-1 rounded-pill fw-medium transition-all"
                         style={{
                           fontSize: '0.75rem',
                           backgroundColor: isSelected ? '#166534' : '#f8fafc',
@@ -397,7 +387,7 @@ export default function CreatePackageModal({ isOpen, onClose, onPackageCreated, 
 
               {/* Information / Tag & Admin Message */}
               <div className="col-md-6">
-                <label className="form-label fw-semibold text-dark mb-1" style={{ fontSize: '0.85rem' }}>
+                <label className="form-label fw-semibold text-dark mb-2" style={{ fontSize: '0.85rem' }}>
                   Information / Tag
                 </label>
                 <div className="input-group">
@@ -415,7 +405,7 @@ export default function CreatePackageModal({ isOpen, onClose, onPackageCreated, 
               </div>
 
               <div className="col-md-6">
-                <label className="form-label fw-semibold text-dark mb-1" style={{ fontSize: '0.85rem' }}>
+                <label className="form-label fw-semibold text-dark mb-2" style={{ fontSize: '0.85rem' }}>
                   Admin Message
                 </label>
                 <div className="input-group">
@@ -448,7 +438,7 @@ export default function CreatePackageModal({ isOpen, onClose, onPackageCreated, 
             </button>
             <button 
               type="submit" 
-              className="btn px-4 py-2 rounded-3 fw-bold text-white d-flex align-items-center gap-1.5 shadow-sm"
+              className="btn px-4 py-2 rounded-3 fw-bold text-white d-flex align-items-center gap-2 shadow-sm"
               style={{ backgroundColor: '#166534', borderColor: '#166534', fontSize: '0.88rem' }}
               disabled={submitting}
             >

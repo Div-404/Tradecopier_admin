@@ -110,8 +110,8 @@ export default function SubscriptionsPage() {
             <h4 className="fw-bolder text-dark m-0" style={{ letterSpacing: '-0.4px' }}>
               Subscription Packages for Brokers
             </h4>
-            <span className="badge rounded-pill bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2.5 py-1" style={{ fontSize: '0.72rem', fontWeight: 600 }}>
-              <i className="bi bi-box-seam me-1"></i> {totalPackagesCount} Packages
+            <span className="badge rounded-pill bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-1" style={{ fontSize: '0.72rem', fontWeight: 600 }}>
+              <i className="bi bi-box-seam me-2"></i> {totalPackagesCount} Packages
             </span>
           </div>
           <span className="text-secondary" style={{ fontSize: '0.85rem' }}>
@@ -122,10 +122,10 @@ export default function SubscriptionsPage() {
         <div className="d-flex align-items-center gap-2">
           <button 
             type="button" 
-            className="btn btn-neon-primary shadow-sm d-flex align-items-center gap-1.5"
+            className="btn btn-neon-primary shadow-sm d-flex align-items-center gap-2"
             onClick={handleOpenCreate}
           >
-            <i className="bi bi-plus-lg"></i>
+            <i className="bi bi-plus-lg me-2"></i>
             <span>Create Package</span>
           </button>
         </div>
@@ -149,7 +149,7 @@ export default function SubscriptionsPage() {
                 onClick={() => setActiveTabId(tab.id)}
                 className="btn d-flex align-items-center gap-2 py-2 px-3 rounded-3 text-nowrap"
                 style={{
-                  border: isActive ? '1.5px solid #22c55e' : '1.5px solid transparent',
+                  border: isActive ? '2px solid #22c55e' : '2px solid transparent',
                   backgroundColor: isActive ? '#EDFAE6' : '#f8fafc',
                   color: isActive ? '#166534' : '#64748b',
                   fontWeight: isActive ? 700 : 500,
@@ -202,7 +202,7 @@ export default function SubscriptionsPage() {
               className="btn btn-neon-primary px-4 fw-bold shadow-sm"
               onClick={handleOpenCreate}
             >
-              <i className="bi bi-plus-lg me-1.5"></i>
+              <i className="bi bi-plus-lg me-2"></i>
               <span>Create Package for {activeTab.title}</span>
             </button>
           </div>
@@ -221,7 +221,7 @@ export default function SubscriptionsPage() {
               return (
                 <div className="col-12 col-md-4" key={idx}>
                   <div 
-                    className="p-3.5 p-md-4 bg-white rounded-4 border h-100"
+                    className="p-4 bg-white rounded-4 border h-100"
                     style={{ 
                       borderColor: '#e2e8f0',
                       boxShadow: '0 4px 20px rgba(0, 0, 0, 0.03)' 
@@ -250,7 +250,7 @@ export default function SubscriptionsPage() {
                           {pkgName}
                         </h4>
                         {oPkg.Information && (
-                          <span className="badge bg-light text-dark border me-1" style={{ fontSize: '0.65rem' }}>
+                          <span className="badge bg-light text-dark border me-2" style={{ fontSize: '0.65rem' }}>
                             {oPkg.Information}
                           </span>
                         )}
@@ -260,25 +260,25 @@ export default function SubscriptionsPage() {
                     {/* 4 Stat Boxes in 2x2 Grid */}
                     <div className="row g-2 mb-3">
                       <div className="col-6">
-                        <div className="p-2.5 rounded-3" style={{ background: '#f0f7ff', border: '1px solid #e0f2fe' }}>
+                        <div className="p-3 rounded-3" style={{ background: '#f0f7ff', border: '1px solid #e0f2fe' }}>
                           <div className="fw-bolder text-dark fs-5 mb-0">{master}</div>
                           <div className="text-secondary fw-medium" style={{ fontSize: '0.75rem' }}>Max Master Accounts</div>
                         </div>
                       </div>
                       <div className="col-6">
-                        <div className="p-2.5 rounded-3" style={{ background: '#f0fdf4', border: '1px solid #dcfce7' }}>
+                        <div className="p-3 rounded-3" style={{ background: '#f0fdf4', border: '1px solid #dcfce7' }}>
                           <div className="fw-bolder text-dark fs-5 mb-0">{slave}</div>
                           <div className="text-secondary fw-medium" style={{ fontSize: '0.75rem' }}>Max Investor Accounts</div>
                         </div>
                       </div>
                       <div className="col-6">
-                        <div className="p-2.5 rounded-3" style={{ background: '#faf5ff', border: '1px solid #ede9fe' }}>
+                        <div className="p-3 rounded-3" style={{ background: '#faf5ff', border: '1px solid #ede9fe' }}>
                           <div className="fw-bolder text-dark fs-6 mb-0">{duration} Days</div>
                           <div className="text-secondary fw-medium" style={{ fontSize: '0.75rem' }}>Duration</div>
                         </div>
                       </div>
                       <div className="col-6">
-                        <div className="p-2.5 rounded-3" style={{ background: '#fff1f2', border: '1px solid #ffe4e6' }}>
+                        <div className="p-3 rounded-3" style={{ background: '#fff1f2', border: '1px solid #ffe4e6' }}>
                           <div className="fw-bolder text-dark fs-6 mb-0">${amount} USD</div>
                           <div className="text-secondary fw-medium" style={{ fontSize: '0.75rem' }}>Subscription Fee</div>
                         </div>
@@ -287,12 +287,12 @@ export default function SubscriptionsPage() {
 
                     {/* Features Indicator Banner */}
                     <div className="p-2 px-3 rounded-3 mb-3 d-flex align-items-center justify-content-between" style={{ backgroundColor: '#f2fbf6', border: '1px solid #dcfce7' }}>
-                      <div className="d-flex align-items-center gap-1.5" style={{ fontSize: '0.8rem' }}>
-                        <i className={`bi bi-${tradeProp === 2 ? 'check-circle-fill text-success' : 'x-circle-fill text-muted'}`}></i>
+                      <div className="d-flex align-items-center gap-2" style={{ fontSize: '0.8rem' }}>
+                        <i className={`bi bi-${tradeProp === 2 ? 'check-circle-fill text-success' : 'x-circle-fill text-muted'} me-2`}></i>
                         <span className="fw-bold">Trade Prop ({tradeProp === 2 ? 'On' : 'Off'})</span>
                       </div>
-                      <div className="d-flex align-items-center gap-1.5" style={{ fontSize: '0.8rem' }}>
-                        <i className={`bi bi-${riskManager === 2 ? 'check-circle-fill text-success' : 'x-circle-fill text-muted'}`}></i>
+                      <div className="d-flex align-items-center gap-2" style={{ fontSize: '0.8rem' }}>
+                        <i className={`bi bi-${riskManager === 2 ? 'check-circle-fill text-success' : 'x-circle-fill text-muted'} me-2`}></i>
                         <span className="fw-bold">Risk Manager ({riskManager === 2 ? 'On' : 'Off'})</span>
                       </div>
                     </div>
@@ -302,21 +302,21 @@ export default function SubscriptionsPage() {
                       <div className="col-6">
                         <button
                           type="button"
-                          className="btn w-100 text-white fw-bold py-1.5"
+                          className="btn w-100 text-white fw-bold py-2 d-flex align-items-center justify-content-center gap-2"
                           style={{ backgroundColor: '#059669', borderRadius: '8px', fontSize: '0.82rem' }}
                           onClick={() => handleOpenEdit(item)}
                         >
-                          <i className="bi bi-pencil-fill me-1"></i> Edit Package
+                          <i className="bi bi-pencil-fill me-2"></i> Edit Package
                         </button>
                       </div>
                       <div className="col-6">
                         <button
                           type="button"
-                          className="btn w-100 fw-bold py-1.5"
-                          style={{ backgroundColor: '#ffffff', border: '1.5px solid #fecdd3', color: '#e11d48', borderRadius: '8px', fontSize: '0.82rem' }}
+                          className="btn w-100 fw-bold py-2 d-flex align-items-center justify-content-center gap-2"
+                          style={{ backgroundColor: '#ffffff', border: '2px solid #fecdd3', color: '#e11d48', borderRadius: '8px', fontSize: '0.82rem' }}
                           onClick={() => handleDeletePackage(item)}
                         >
-                          <i className="bi bi-trash3-fill me-1"></i> Delete Package
+                          <i className="bi bi-trash3-fill me-2"></i> Delete Package
                         </button>
                       </div>
                     </div>

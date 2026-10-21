@@ -58,7 +58,7 @@ export default function ViewInvoiceModal({ transaction, isOpen, onClose }) {
             </div>
           </div>
 
-          <div className="bg-light rounded-3 p-3.5 mb-4">
+          <div className="bg-light rounded-3 p-3 mb-4">
             <div className="row g-3" style={{ fontSize: '0.85rem' }}>
               <div className="col-6">
                 <span className="text-secondary d-block" style={{ fontSize: '0.74rem' }}>PACKAGE TIER:</span>

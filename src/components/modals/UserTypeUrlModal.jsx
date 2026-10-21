@@ -275,7 +275,7 @@ export default function UserTypeUrlModal({ isOpen, onClose, initialProfileId, br
           <form onSubmit={handleSave} className="p-3 mb-3 border rounded-3 bg-white shadow-sm" style={{ borderColor: '#3b82f6 !important' }}>
             <div className="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
               <h6 className="m-0 fw-bold text-primary" style={{ fontSize: '13.5px' }}>
-                <i className="bi bi-pencil-square me-1"></i>
+                <i className="bi bi-pencil-square me-2"></i>
                 {urlsList.some(u => Number(u.Type) === Number(formData.type)) ? 'Edit' : 'Add'} User Type URL
               </h6>
               <button type="button" className="btn-close shadow-none" style={{ fontSize: '0.7rem' }} onClick={() => setShowForm(false)}></button>
@@ -342,7 +342,7 @@ export default function UserTypeUrlModal({ isOpen, onClose, initialProfileId, br
             <div className="d-flex justify-content-end gap-2 mt-3 pt-2 border-top">
               <button type="button" className="btn btn-sm btn-light border" onClick={() => setShowForm(false)}>Cancel</button>
               <button type="submit" className="btn btn-sm btn-primary text-white fw-bold px-4" disabled={loading}>
-                {loading ? <span className="spinner-border spinner-border-sm me-1"></span> : null}
+                {loading ? <span className="spinner-border spinner-border-sm me-2"></span> : null}
                 Save
               </button>
             </div>
