@@ -21,16 +21,16 @@ export default function CreatePackageModal({ isOpen, onClose, onPackageCreated, 
   // Form state precisely matching design & API structure
   const [formState, setFormState] = useState({
     Key: "",
-    Pkg: "ITC Starter",
-    Master: 2,
-    Slave: 50,
+    Pkg: "",
+    Master: "",
+    Slave: "",
     Type: initialType || 1,
-    TradeProp: 2, // 1 - Disabled, 2 - Enabled
-    RiskManager: 2, // 1 - Disabled, 2 - Enabled
-    Amount: 100,
-    Duration_Days: 30,
-    Information: "Recommended",
-    Admin_Msg: "Add Package"
+    TradeProp: 1, // 1 - Disabled, 2 - Enabled
+    RiskManager: 1, // 1 - Disabled, 2 - Enabled
+    Amount: "",
+    Duration_Days: "",
+    Information: "",
+    Admin_Msg: ""
   });
 
   useEffect(() => {
@@ -53,16 +53,16 @@ export default function CreatePackageModal({ isOpen, onClose, onPackageCreated, 
       } else {
         setFormState({
           Key: "",
-          Pkg: "ITC Pro Package",
-          Master: 5,
-          Slave: 20,
+          Pkg: "",
+          Master: "",
+          Slave: "",
           Type: Number(initialType || 1),
-          TradeProp: 2,
-          RiskManager: 2,
-          Amount: 150,
-          Duration_Days: 30,
-          Information: "Recommended",
-          Admin_Msg: "Add Package"
+          TradeProp: 1,
+          RiskManager: 1,
+          Amount: "",
+          Duration_Days: "",
+          Information: "",
+          Admin_Msg: ""
         });
       }
     }
@@ -181,29 +181,54 @@ export default function CreatePackageModal({ isOpen, onClose, onPackageCreated, 
 
               {/* Package Name & Package Type */}
               <div className="col-md-6">
-                <label className="form-label fw-semibold text-dark mb-1" style={{ fontSize: '0.85rem' }}>
-                  Package Name
+                <label className="form-label fw-semibold text-dark mb-1 d-flex align-items-center justify-content-between" style={{ fontSize: '0.85rem' }}>
+                  <span>Package Name</span>
+                  {/* {isEditing && (
+                    <span className="text-muted fw-normal" style={{ fontSize: '0.75rem' }}>
+                      <i className="bi bi-lock me-1"></i>Cannot be changed
+                    </span>
+                  )} */}
                 </label>
                 <input 
                   type="text" 
                   className="form-control form-control-lg rounded-3 fs-6 px-3" 
-                  style={{ borderColor: '#e2e8f0', height: '44px', fontSize: '0.9rem' }}
-                  placeholder="ITC Starter"
+                  style={{ 
+                    borderColor: '#e2e8f0', 
+                    height: '44px', 
+                    fontSize: '0.9rem',
+                    backgroundColor: isEditing ? '#f8fafc' : '#ffffff',
+                    cursor: isEditing ? 'not-allowed' : 'text',
+                    color: isEditing ? '#64748b' : undefined
+                  }}
                   value={formState.Pkg}
                   onChange={(e) => handleInputChange('Pkg', e.target.value)}
+                  disabled={isEditing}
                   required
                 />
               </div>
 
               <div className="col-md-6">
-                <label className="form-label fw-semibold text-dark mb-1" style={{ fontSize: '0.85rem' }}>
-                  Package Type
+                <label className="form-label fw-semibold text-dark mb-1 d-flex align-items-center justify-content-between" style={{ fontSize: '0.85rem' }}>
+                  <span>Package Type</span>
+                  {/* {isEditing && (
+                    <span className="text-muted fw-normal" style={{ fontSize: '0.75rem' }}>
+                      <i className="bi bi-lock me-1"></i>Cannot be changed
+                    </span>
+                  )} */}
                 </label>
                 <select 
                   className="form-select form-select-lg rounded-3 fs-6 px-3"
-                  style={{ borderColor: '#e2e8f0', height: '44px', fontSize: '0.9rem' }}
+                  style={{ 
+                    borderColor: '#e2e8f0', 
+                    height: '44px', 
+                    fontSize: '0.9rem',
+                    backgroundColor: isEditing ? '#f8fafc' : '#ffffff',
+                    cursor: isEditing ? 'not-allowed' : 'pointer',
+                    color: isEditing ? '#64748b' : undefined
+                  }}
                   value={formState.Type}
                   onChange={(e) => handleInputChange('Type', Number(e.target.value))}
+                  disabled={isEditing}
                 >
                   {PACKAGE_TYPES.map(t => (
                     <option key={t.id} value={t.id}>
@@ -216,7 +241,7 @@ export default function CreatePackageModal({ isOpen, onClose, onPackageCreated, 
               {/* Master Accounts & Investor Accounts (Slave) */}
               <div className="col-md-6">
                 <div className="p-3 rounded-3 border bg-white" style={{ borderColor: '#e2e8f0' }}>
-                  <label className="form-label fw-bold text-dark mb-2 d-flex align-items-center gap-1.5" style={{ fontSize: '0.85rem' }}>
+                  <label className="form-label fw-bold text-dark mb-2 d-flex align-items-center gap-2" style={{ fontSize: '0.85rem' }}>
                     <i className="bi bi-person-fill text-primary" style={{ fontSize: '0.95rem' }}></i>
                     Max Master Accounts
                   </label>
@@ -225,7 +250,6 @@ export default function CreatePackageModal({ isOpen, onClose, onPackageCreated, 
                     className="form-control rounded-3 px-3" 
                     style={{ borderColor: '#e2e8f0', height: '42px', fontSize: '0.9rem' }}
                     min="1"
-                    placeholder="2"
                     value={formState.Master}
                     onChange={(e) => handleInputChange('Master', e.target.value)}
                     required
@@ -235,15 +259,14 @@ export default function CreatePackageModal({ isOpen, onClose, onPackageCreated, 
 
               <div className="col-md-6">
                 <div className="p-3 rounded-3 border bg-white" style={{ borderColor: '#e2e8f0' }}>
-                  <label className="form-label fw-bold text-dark mb-2 d-flex align-items-center gap-1.5" style={{ fontSize: '0.85rem' }}>
+                  <label className="form-label fw-bold text-dark mb-2 d-flex align-items-center gap-2" style={{ fontSize: '0.85rem' }}>
                     <i className="bi bi-people-fill text-success" style={{ fontSize: '0.95rem' }}></i>
-                    Max Investor Accounts <span className="text-muted fw-normal" style={{ fontSize: '0.8rem' }}>(Slave)</span>
+                    Max Investor Accounts <span className="text-muted fw-normal" style={{ fontSize: '0.8rem' }}></span>
                   </label>
                   <input 
                     type="number" 
                     className="form-control rounded-3 px-3" 
                     style={{ borderColor: '#e2e8f0', height: '42px', fontSize: '0.9rem' }}
-                    placeholder="50"
                     value={formState.Slave}
                     onChange={(e) => handleInputChange('Slave', e.target.value)}
                     required
@@ -322,7 +345,6 @@ export default function CreatePackageModal({ isOpen, onClose, onPackageCreated, 
                     className="form-control border-start-0 border-end-0 fw-bold text-dark px-2" 
                     style={{ borderColor: '#e2e8f0', height: '42px', fontSize: '0.9rem' }}
                     min="0"
-                    placeholder="100"
                     value={formState.Amount}
                     onChange={(e) => handleInputChange('Amount', e.target.value)}
                     required
@@ -343,7 +365,6 @@ export default function CreatePackageModal({ isOpen, onClose, onPackageCreated, 
                     type="number" 
                     className="form-control border-start-0 border-end-0 px-2" 
                     style={{ borderColor: '#e2e8f0', height: '42px', fontSize: '0.9rem' }}
-                    placeholder="30"
                     value={formState.Duration_Days}
                     onChange={(e) => handleInputChange('Duration_Days', e.target.value)}
                     required
@@ -351,7 +372,7 @@ export default function CreatePackageModal({ isOpen, onClose, onPackageCreated, 
                   <span className="input-group-text bg-light text-secondary border-start-0 rounded-end-3" style={{ fontSize: '0.82rem', borderColor: '#e2e8f0' }}>Days</span>
                 </div>
                 {/* Duration Pills */}
-                <div className="d-flex align-items-center gap-1.5">
+                <div className="d-flex align-items-center gap-2 mt-1">
                   {[30, 36, 90, 180, 365].map(d => {
                     const isSelected = Number(formState.Duration_Days) === d;
                     return (
@@ -387,7 +408,6 @@ export default function CreatePackageModal({ isOpen, onClose, onPackageCreated, 
                     type="text" 
                     className="form-control border-start-0 rounded-end-3 px-2" 
                     style={{ borderColor: '#e2e8f0', height: '42px', fontSize: '0.9rem' }}
-                    placeholder="Recommended"
                     value={formState.Information}
                     onChange={(e) => handleInputChange('Information', e.target.value)}
                   />
@@ -406,7 +426,6 @@ export default function CreatePackageModal({ isOpen, onClose, onPackageCreated, 
                     type="text" 
                     className="form-control border-start-0 rounded-end-3 px-2" 
                     style={{ borderColor: '#e2e8f0', height: '42px', fontSize: '0.9rem' }}
-                    placeholder="Add Package"
                     value={formState.Admin_Msg}
                     onChange={(e) => handleInputChange('Admin_Msg', e.target.value)}
                   />
