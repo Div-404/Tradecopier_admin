@@ -6,8 +6,8 @@ export default function LoginPage() {
   const { login, isAuthenticated } = useSuperAdmin();
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState('superadmin@tradecopier.io');
-  const [password, setPassword] = useState('••••••••••••');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -69,7 +69,6 @@ export default function LoginPage() {
               <input 
                 type="email" 
                 className="form-control border-start-0 ps-0" 
-                placeholder="superadmin@tradecopier.io"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -86,7 +85,6 @@ export default function LoginPage() {
               <input 
                 type={showPassword ? 'text' : 'password'} 
                 className="form-control border-start-0 border-end-0 ps-0" 
-                placeholder="Enter password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required

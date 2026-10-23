@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { initialBrokers, initialSubscriptionPackages, initialTransactions } from '../mock/superAdminData';
+import { initialTransactions } from '../mock/superAdminData';
 import { 
   apiGetAdmProfiles, 
   apiGetAdmUserPackage, 
@@ -41,20 +41,14 @@ export function SuperAdminProvider({ children }) {
 
   const DATA_VERSION = 'v29_real_profile_india_JX5577EE11';
 
-  // Brokers State
+  // Brokers State (Pure Dynamic Data from GET_ADM_PROFILES API)
   const [brokers, setBrokers] = useState(() => {
-    const savedVer = localStorage.getItem('superadmin_data_ver');
-    if (savedVer !== DATA_VERSION) {
-      localStorage.removeItem('superadmin_brokers');
-      localStorage.setItem('superadmin_data_ver', DATA_VERSION);
-      return initialBrokers;
-    }
     const saved = localStorage.getItem('superadmin_brokers');
-    if (!saved) return initialBrokers;
+    if (!saved) return [];
     try {
       return JSON.parse(saved);
     } catch {
-      return initialBrokers;
+      return [];
     }
   });
 
@@ -176,15 +170,21 @@ export function SuperAdminProvider({ children }) {
         ? urls.map(u => getCopierInfo(u.Type).name).join(', ')
         : 'No Package / URLs Configured';
       const planId = urls.length > 0 ? `pkg-type-${urls[0].Type}` : null;
-      setBrokers((prev) =>
-        prev.map((b) => {
+      setBrokers((prev) => {
+        let changed = false;
+        const updated = prev.map((b) => {
           const pId = String(b.managerId || b.profileId || b.rawProfile?.Profile || '');
           if (pId === String(profileId)) {
+            if (b.planName === planName && b.planId === planId && JSON.stringify(b.configuredUrls || []) === JSON.stringify(urls)) {
+              return b;
+            }
+            changed = true;
             return { ...b, planName, planId, configuredUrls: urls };
           }
           return b;
-        })
-      );
+        });
+        return changed ? updated : prev;
+      });
       return { planName, planId, urls };
     } catch (e) {
       console.warn('refreshBrokerPlanFromUrls error:', e);
@@ -514,12 +514,17 @@ export function SuperAdminProvider({ children }) {
     showToast('Package removed successfully.', 'info');
   };
 
-  // Reset to initial demo data
-  const resetDemoData = () => {
-    setBrokers(initialBrokers);
-    setPackages(initialSubscriptionPackages);
-    setTransactions(initialTransactions);
-    showToast('Reset to original sample data.');
+  // Reset / Refresh from live APIs (Zero static mocks)
+  const resetDemoData = async () => {
+    localStorage.removeItem('superadmin_brokers');
+    localStorage.removeItem('superadmin_packages');
+    setBrokers([]);
+    setPackages([]);
+    await Promise.all([
+      fetchProfilesFromApi(),
+      fetchPackagesFromApi()
+    ]);
+    showToast('Refreshed live data from APIs.');
   };
 
   return (

@@ -2,7 +2,12 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useSuperAdmin } from '../../../context/SuperAdminContext';
 import CreatePackageModal from '../../../components/modals/CreatePackageModal';
 import CustomizePackageModal from '../../../components/modals/CustomizePackageModal';
-import { apiGetAdmUserPackage, apiDelAdmUserPackage } from '../../../services/api';
+import { 
+  apiGetAdmUserPackage, 
+  apiDelAdmUserPackage,
+  apiGetAdmUserCustomizePkg,
+  apiUpdateCustomizePkgStatus
+} from '../../../services/api';
 
 const SERVICE_TABS = [
   { id: 'internal-trade-copier', typeId: 1, title: 'Internal Trade Copier', icon: 'bi-arrow-left-right' },
@@ -16,7 +21,7 @@ const SERVICE_TABS = [
 ];
 
 export default function FinancePackagesTab() {
-  const { showToast } = useSuperAdmin();
+  const { showToast, brokers = [] } = useSuperAdmin();
 
   // Tab State
   const [activeTabId, setActiveTabId] = useState(SERVICE_TABS[0].id);
@@ -25,6 +30,11 @@ export default function FinancePackagesTab() {
   // Dynamic API Packages State across all types
   const [packagesByTypeMap, setPackagesByTypeMap] = useState({});
   const [loading, setLoading] = useState(false);
+
+  // Customized Packages State (via GET_ADM_USER_CUSTOMIZE_PKG)
+  const [customizePackages, setCustomizePackages] = useState([]);
+  const [loadingCustomize, setLoadingCustomize] = useState(false);
+  const [togglingPkgCode, setTogglingPkgCode] = useState(null);
 
   // Modal states
   const [isCreatePackageOpen, setIsCreatePackageOpen] = useState(false);
@@ -55,9 +65,25 @@ export default function FinancePackagesTab() {
     }
   }, []);
 
+  // Fetch customized packages for brokers
+  const fetchCustomizePackages = useCallback(async () => {
+    setLoadingCustomize(true);
+    try {
+      const res = await apiGetAdmUserCustomizePkg({ initial: 1, maxCount: 50 });
+      const list = res?.lstPkg || (Array.isArray(res) ? res : []);
+      setCustomizePackages(list);
+    } catch (err) {
+      console.error("GET_ADM_USER_CUSTOMIZE_PKG Error:", err);
+      setCustomizePackages([]);
+    } finally {
+      setLoadingCustomize(false);
+    }
+  }, []);
+
   useEffect(() => {
     fetchAllTypePackages();
-  }, [fetchAllTypePackages]);
+    fetchCustomizePackages();
+  }, [fetchAllTypePackages, fetchCustomizePackages]);
 
   // Packages for currently active tab & Total across all tabs
   const tabPackages = packagesByTypeMap[activeTab.typeId] || [];
@@ -78,6 +104,29 @@ export default function FinancePackagesTab() {
     } catch (err) {
       console.error("DEL_ADM_USER_PACKAGE Error:", err);
       showToast?.("API Delete Error: " + err.message, "error");
+    }
+  };
+
+  // Toggle Customized Package Status via UPDATE_CUSTOMIZE_PKG_STATUS API
+  const handleToggleCustomizeStatus = async (item) => {
+    const oPkg = item.oPkg || item;
+    const pkgCode = oPkg.PkgCode || item.PkgID;
+    const currentStatus = Number(oPkg.Status ?? 1);
+    const newStatus = currentStatus === 1 ? 2 : 1; // 1- Enable, 2- Disable
+
+    setTogglingPkgCode(pkgCode);
+    try {
+      const res = await apiUpdateCustomizePkgStatus({
+        reserve1: pkgCode,
+        status: newStatus,
+      });
+      showToast?.(res.MSG_USER || `Package status updated to ${newStatus === 1 ? 'Active' : 'Disabled'}`, 'success');
+      await fetchCustomizePackages();
+    } catch (err) {
+      console.error("UPDATE_CUSTOMIZE_PKG_STATUS Error:", err);
+      showToast?.("Status update error: " + err.message, "error");
+    } finally {
+      setTogglingPkgCode(null);
     }
   };
 
@@ -108,7 +157,10 @@ export default function FinancePackagesTab() {
       <CustomizePackageModal
         isOpen={isCustomizeModalOpen}
         onClose={() => setIsCustomizeModalOpen(false)}
-        onPackageCustomized={() => fetchAllTypePackages()}
+        onPackageCustomized={() => {
+          fetchAllTypePackages();
+          fetchCustomizePackages();
+        }}
       />
 
       {/* Page Header */}
@@ -118,7 +170,7 @@ export default function FinancePackagesTab() {
             <h4 className="fw-bolder text-dark m-0" style={{ letterSpacing: '-0.4px' }}>
               Subscription Packages for Brokers
             </h4>
-            <span className="badge rounded-pill bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-1" style={{ fontSize: '0.72rem', fontWeight: 600 }}>
+            <span className="badge rounded-pill bg-success bg-opacity-10 text-black border border-success border-opacity-25 px-3 py-1" style={{ fontSize: '0.72rem', fontWeight: 600 }}>
               <i className="bi bi-box-seam me-2"></i> {totalPackagesCount} Packages
             </span>
           </div>
@@ -349,6 +401,154 @@ export default function FinancePackagesTab() {
 
       </div>
 
+      {/* Customized Broker Packages Section (GET_ADM_USER_CUSTOMIZE_PKG) */}
+      <div className="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+        <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+          <div>
+            <div className="d-flex align-items-center gap-2 mb-2">
+              <h5 className="fw-bolder text-dark m-0" style={{ letterSpacing: '-0.3px' }}>
+                Customized Broker Packages
+              </h5>
+              <span className="badge rounded-pill bg-primary bg-opacity-10 text-black border border-primary border-opacity-25 px-3 py-1" style={{ fontSize: '0.72rem', fontWeight: 600 }}>
+                <i className="bi bi-sliders me-2"></i> {customizePackages.length} Tailored Packages
+              </span>
+            </div>
+            <span className="text-secondary" style={{ fontSize: '0.84rem' }}>
+              Special package quotas, customized rates, and promotional terms assigned to specific broker profiles.
+            </span>
+          </div>
+
+          <button
+            type="button"
+            className="btn btn-outline-success shadow-2xs d-flex align-items-center gap-2 fw-semibold"
+            style={{ borderRadius: '10px', fontSize: '0.86rem' }}
+            onClick={() => setIsCustomizeModalOpen(true)}
+          >
+            <i className="bi bi-plus-circle me-2"></i>
+            <span>Add Custom Package</span>
+          </button>
+        </div>
+
+        {loadingCustomize ? (
+          <div className="text-center py-5 text-muted">
+            <span className="spinner-border spinner-border-sm me-2 text-dark"></span>
+            <span className="text-dark fw-medium">Loading customized packages...</span>
+          </div>
+        ) : customizePackages.length === 0 ? (
+          <div className="text-center py-5 text-muted">
+            <i className="bi bi-inbox fs-2 d-block mb-2 text-secondary"></i>
+            <span className="text-dark fw-medium">No customized broker packages found.</span>
+          </div>
+        ) : (
+          <div className="table-responsive">
+            <table className="table table-hover align-middle mb-0">
+              <thead className="bg-light bg-opacity-50">
+                <tr style={{ fontSize: '0.8rem', color: '#475569' }}>
+                  <th className="py-3 px-3">Broker / User</th>
+                  <th className="py-3 px-3">Package Code</th>
+                  <th className="py-3 px-3">Custom Rate</th>
+                  <th className="py-3 px-3">Validity</th>
+                  <th className="py-3 px-3">Coupon Apply</th>
+                  <th className="py-3 px-3">Status</th>
+                  <th className="py-3 px-3 text-end">Action</th>
+                </tr>
+              </thead>
+              <tbody style={{ fontSize: '0.86rem' }}>
+                {customizePackages.map((item, idx) => {
+                  const oPkg = item.oPkg || item;
+                  const profileId = oPkg.Profile_ID ?? item.Profile_ID;
+                  const broker = brokers.find((b) => String(b.profileId || b.id || b.managerId) === String(profileId));
+                  const isEnabled = Number(oPkg.Status) === 1;
+                  const isToggling = togglingPkgCode === oPkg.PkgCode;
+
+                  return (
+                    <tr key={item.PkgID || oPkg.PkgCode || idx}>
+                      <td className="py-3 px-3">
+                        <div className="d-flex align-items-center gap-2">
+                          <div 
+                            className="rounded-circle d-flex align-items-center justify-content-center fw-bold"
+                            style={{ width: '36px', height: '36px', backgroundColor: '#e2e8f0', color: '#000000', fontSize: '0.78rem' }}
+                          >
+                            {broker?.name ? broker.name.charAt(0).toUpperCase() : 'B'}
+                          </div>
+                          <div>
+                            <div className="fw-bold text-dark">{broker?.name || `Broker Profile #${profileId}`}</div>
+                            <div className="text-secondary" style={{ fontSize: '0.75rem' }}>
+                              {broker?.email || `Profile ID: ${profileId}`}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="py-3 px-3">
+                        <span className="badge bg-light text-black border border-secondary border-opacity-25 px-2.5 py-1 fw-bold" style={{ fontSize: '0.8rem' }}>
+                          {oPkg.PkgCode || `PKG-${item.PkgID}`}
+                        </span>
+                      </td>
+                      <td className="py-3 px-3 fw-bold text-dark">
+                        ${Number(oPkg.Amt || 0).toLocaleString()} USD
+                      </td>
+                      <td className="py-3 px-3 text-dark">
+                        <i className="bi bi-calendar3 me-2 text-secondary"></i>
+                        {oPkg.ValidityDays || oPkg.Validity_Day || 30} Days
+                      </td>
+                      <td className="py-3 px-3">
+                        {Number(oPkg.Coupan_Apply ?? oPkg.CoupanApply) === 1 ? (
+                          <span className="badge bg-success bg-opacity-10 text-black border border-success border-opacity-25 px-2.5 py-1">
+                            <i className="bi bi-check2 me-2"></i>Enabled
+                          </span>
+                        ) : (
+                          <span className="badge bg-secondary bg-opacity-10 text-black border border-secondary border-opacity-25 px-2.5 py-1">
+                            <i className="bi bi-dash me-2"></i>Disabled
+                          </span>
+                        )}
+                      </td>
+                      <td className="py-3 px-3">
+                        {isEnabled ? (
+                          <span className="badge bg-success bg-opacity-10 text-black border border-success border-opacity-25 px-3 py-1">
+                            <i className="bi bi-check-circle-fill me-2"></i>Active
+                          </span>
+                        ) : (
+                          <span className="badge bg-danger bg-opacity-10 text-black border border-danger border-opacity-25 px-3 py-1">
+                            <i className="bi bi-x-circle-fill me-2"></i>Inactive
+                          </span>
+                        )}
+                      </td>
+                      <td className="py-3 px-3 text-end">
+                        <button
+                          type="button"
+                          className={`btn btn-sm d-inline-flex align-items-center gap-2 fw-semibold px-3 py-1.5 rounded-2 ${
+                            isEnabled ? 'btn-outline-danger' : 'btn-outline-success'
+                          }`}
+                          style={{ fontSize: '0.8rem' }}
+                          onClick={() => handleToggleCustomizeStatus(item)}
+                          disabled={isToggling}
+                        >
+                          {isToggling ? (
+                            <>
+                              <span className="spinner-border spinner-border-sm me-2"></span>
+                              <span>Updating...</span>
+                            </>
+                          ) : isEnabled ? (
+                            <>
+                              <i className="bi bi-slash-circle me-2"></i>
+                              <span>Disable</span>
+                            </>
+                          ) : (
+                            <>
+                              <i className="bi bi-check-circle me-2"></i>
+                              <span>Enable</span>
+                            </>
+                          )}
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

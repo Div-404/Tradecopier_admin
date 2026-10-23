@@ -3,7 +3,7 @@ import { useSuperAdmin } from '../../context/SuperAdminContext';
 
 export default function SubscribeBrokerModal({ pkg, isOpen, onClose }) {
   const { brokers, updateBrokerPlan, showToast } = useSuperAdmin();
-  const [selectedBrokerId, setSelectedBrokerId] = useState(brokers[0]?.id || '');
+  const [selectedBrokerId, setSelectedBrokerId] = useState('');
   const [billingCycle, setBillingCycle] = useState('Monthly');
 
   if (!isOpen || !pkg) return null;
@@ -60,7 +60,7 @@ export default function SubscribeBrokerModal({ pkg, isOpen, onClose }) {
             <div className="p-3 rounded-3 mb-3 border bg-light">
               <div className="d-flex justify-content-between align-items-center mb-1">
                 <span className="fw-bold text-dark fs-6">{pkg.name}</span>
-                <span className="badge rounded-pill bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1" style={{ fontSize: '0.72rem' }}>
+                <span className="badge rounded-pill bg-success bg-opacity-10 text-black border border-success border-opacity-25 px-2 py-1" style={{ fontSize: '0.72rem' }}>
                   {pkg.subtitle}
                 </span>
               </div>
@@ -80,6 +80,7 @@ export default function SubscribeBrokerModal({ pkg, isOpen, onClose }) {
                 onChange={(e) => setSelectedBrokerId(e.target.value)}
                 required
               >
+                <option value="">Select a Broker...</option>
                 {brokers.map(b => (
                   <option key={b.id} value={b.id}>
                     {b.name} [{b.status}] — Currently on: {b.planName}

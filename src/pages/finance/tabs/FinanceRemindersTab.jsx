@@ -145,7 +145,6 @@ export default function FinanceRemindersTab() {
                   type="text"
                   className="form-control bg-white rounded-3 ps-5"
                   style={{ height: '42px', fontSize: '0.88rem', borderColor: '#e2e8f0' }}
-                  placeholder="Filter by Broker, Email, Phone..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -204,13 +203,13 @@ export default function FinanceRemindersTab() {
                 filteredReminders.map((r) => {
                   let urgencyBadge = null;
                   if (r.urgency === 'EXPIRED') {
-                    urgencyBadge = <span className="badge bg-danger text-white px-3 py-1">Expired</span>;
+                    urgencyBadge = <span className="badge bg-danger text-white px-3 py-1 fw-bold">Expired</span>;
                   } else if (r.urgency === 'CRITICAL') {
-                    urgencyBadge = <span className="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-3 py-1">Critical</span>;
+                    urgencyBadge = <span className="badge bg-danger bg-opacity-10 text-black border border-danger border-opacity-25 px-3 py-1 fw-bold">Critical</span>;
                   } else if (r.urgency === 'EXPIRING_SOON') {
-                    urgencyBadge = <span className="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-3 py-1">Expiring Soon</span>;
+                    urgencyBadge = <span className="badge bg-warning bg-opacity-15 text-black border border-warning border-opacity-50 px-3 py-1 fw-bold">Expiring Soon</span>;
                   } else {
-                    urgencyBadge = <span className="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-1">Active</span>;
+                    urgencyBadge = <span className="badge bg-success bg-opacity-10 text-black border border-success border-opacity-25 px-3 py-1 fw-bold">Active</span>;
                   }
 
                   return (

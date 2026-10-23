@@ -105,7 +105,7 @@ export default function PackageTransactionsPage() {
             <h4 className="fw-bolder text-dark m-0" style={{ letterSpacing: '-0.4px' }}>
               Transaction History
             </h4>
-            <span className="badge rounded-pill bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-1" style={{ fontSize: '0.72rem', fontWeight: 600 }}>
+            <span className="badge rounded-pill bg-success bg-opacity-10 text-black border border-success border-opacity-25 px-3 py-1" style={{ fontSize: '0.72rem', fontWeight: 600 }}>
               <i className="bi bi-shield-check me-2"></i> Audited Financial Ledger
             </span>
           </div>
@@ -258,7 +258,6 @@ export default function PackageTransactionsPage() {
                 <input 
                   type="text" 
                   className="form-control form-control-sm ps-5 pe-3" 
-                  placeholder="Search txn ID, broker, invoice..."
                   value={txnSearch}
                   onChange={(e) => setTxnSearch(e.target.value)}
                 />

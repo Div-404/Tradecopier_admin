@@ -39,14 +39,14 @@ export default function CreatePackageModal({ isOpen, onClose, onPackageCreated, 
         const oPkg = initialData.oPkg || initialData;
         setFormState({
           Key: initialData.Key || "",
-          Pkg: oPkg.Pkg || initialData.name || "ITC Package",
-          Master: oPkg.Master ?? initialData.maxMasters ?? 2,
-          Slave: oPkg.Slave ?? initialData.maxFollowers ?? 50,
+          Pkg: oPkg.Pkg || initialData.name || "",
+          Master: oPkg.Master !== undefined && oPkg.Master !== null ? oPkg.Master : (initialData.maxMasters ?? ""),
+          Slave: oPkg.Slave !== undefined && oPkg.Slave !== null ? oPkg.Slave : (initialData.maxFollowers ?? ""),
           Type: Number(oPkg.Type || initialType || 1),
-          TradeProp: Number(oPkg.TradeProp ?? 2),
-          RiskManager: Number(oPkg.RiskManager ?? 2),
-          Amount: Number(oPkg.Amount ?? initialData.monthlyPrice ?? 100),
-          Duration_Days: Number(oPkg.Duration_Days ?? initialData.durationDays ?? 30),
+          TradeProp: Number(oPkg.TradeProp ?? 1),
+          RiskManager: Number(oPkg.RiskManager ?? 1),
+          Amount: oPkg.Amount !== undefined && oPkg.Amount !== null ? oPkg.Amount : (initialData.monthlyPrice ?? ""),
+          Duration_Days: oPkg.Duration_Days !== undefined && oPkg.Duration_Days !== null ? oPkg.Duration_Days : (initialData.durationDays ?? ""),
           Information: oPkg.Information || initialData.badge || "",
           Admin_Msg: oPkg.Admin_Msg || initialData.description || ""
         });

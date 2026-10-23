@@ -21,12 +21,12 @@ export default function BrokerDetailsModal({ broker, isOpen, onClose }) {
   const [showUrlForm, setShowUrlForm] = useState(false);
   const [urlFormData, setUrlFormData] = useState({
     type: '1',
-    url: 'https://tradercopierfx.traderscabinet.com',
+    url: '',
     oStatus: '2',
-    duration: '60',
+    duration: '',
   });
 
-  const profileId = String(broker?.managerId || broker?.profileId || broker?.id?.replace('brk-', '') || '1000');
+  const profileId = String(broker?.managerId || broker?.profileId || broker?.id?.replace('brk-', '') || '');
 
   // Fetch URLs when switching to urls tab
   const fetchUrls = async () => {
@@ -36,15 +36,13 @@ export default function BrokerDetailsModal({ broker, isOpen, onClose }) {
       const data = await apiGetUserTypeUrl(profileId);
       const urls = Array.isArray(data?.lstURL) ? data.lstURL : [];
       setUrlsList(urls);
-      if (refreshBrokerPlanFromUrls) {
-        refreshBrokerPlanFromUrls(profileId);
-      }
     } catch (err) {
       console.error('GET_USER_TYPE_URL error:', err);
       setUrlError(err.message);
       setUrlsList([]);
+    } finally {
+      setLoadingUrls(false);
     }
-    setLoadingUrls(false);
   };
 
   // Fetch URLs when modal opens or profileId changes
@@ -85,10 +83,14 @@ export default function BrokerDetailsModal({ broker, isOpen, onClose }) {
       });
       setShowUrlForm(false);
       await fetchUrls();
+      if (refreshBrokerPlanFromUrls) {
+        refreshBrokerPlanFromUrls(profileId);
+      }
     } catch (err) {
       setUrlError(err.message);
+    } finally {
+      setLoadingUrls(false);
     }
-    setLoadingUrls(false);
   };
 
   // DELETE URL
@@ -99,10 +101,14 @@ export default function BrokerDetailsModal({ broker, isOpen, onClose }) {
     try {
       await apiDelUserTypeUrl(copierType, profileId);
       await fetchUrls();
+      if (refreshBrokerPlanFromUrls) {
+        refreshBrokerPlanFromUrls(profileId);
+      }
     } catch (err) {
       setUrlError(err.message);
+    } finally {
+      setLoadingUrls(false);
     }
-    setLoadingUrls(false);
   };
 
   const isConnected = broker.status === 'Connected' || broker.status === 'Approved';
@@ -410,7 +416,7 @@ export default function BrokerDetailsModal({ broker, isOpen, onClose }) {
                 <form onSubmit={handleSaveUrl} className="p-3 mb-3 border rounded-3 bg-white shadow-sm">
                   <div className="row g-2">
                     <div className="col-md-4">
-                      <label className="form-label mb-1 fw-semibold" style={{ fontSize: '11px' }}>Type</label>
+                      <label className="form-label mb-2 fw-semibold" style={{ fontSize: '11px' }}>Type</label>
                       <select className="form-select form-select-sm" value={urlFormData.type} onChange={(e) => setUrlFormData(p => ({ ...p, type: e.target.value }))}>
                         {Object.entries(COPIER_TYPE_MAP).map(([id, info]) => (
                           <option key={id} value={id}>{id}: {info.code}</option>
@@ -418,7 +424,7 @@ export default function BrokerDetailsModal({ broker, isOpen, onClose }) {
                       </select>
                     </div>
                     <div className="col-md-4">
-                      <label className="form-label mb-1 fw-semibold" style={{ fontSize: '11px' }}>Status</label>
+                      <label className="form-label mb-2 fw-semibold" style={{ fontSize: '11px' }}>Status</label>
                       <select className="form-select form-select-sm" value={urlFormData.oStatus} onChange={(e) => setUrlFormData(p => ({ ...p, oStatus: e.target.value }))}>
                         {Object.entries(STATUS_MAP).map(([val, info]) => (
                           <option key={val} value={val}>{val}: {info.label}</option>
@@ -426,11 +432,11 @@ export default function BrokerDetailsModal({ broker, isOpen, onClose }) {
                       </select>
                     </div>
                     <div className="col-md-4">
-                      <label className="form-label mb-1 fw-semibold" style={{ fontSize: '11px' }}>Duration (Days)</label>
+                      <label className="form-label mb-2 fw-semibold" style={{ fontSize: '11px' }}>Duration (Days)</label>
                       <input type="number" className="form-control form-control-sm" value={urlFormData.duration} onChange={(e) => setUrlFormData(p => ({ ...p, duration: e.target.value }))} min="0" />
                     </div>
                     <div className="col-12">
-                      <label className="form-label mb-1 fw-semibold" style={{ fontSize: '11px' }}>URL</label>
+                      <label className="form-label mb-2 fw-semibold" style={{ fontSize: '11px' }}>URL</label>
                       <input type="url" className="form-control form-control-sm font-monospace" value={urlFormData.url} onChange={(e) => setUrlFormData(p => ({ ...p, url: e.target.value }))} required />
                     </div>
                   </div>

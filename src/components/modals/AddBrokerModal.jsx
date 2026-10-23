@@ -8,24 +8,24 @@ export default function AddBrokerModal({ isOpen, onClose }) {
     managerId: '',
     name: '',
     type: 'LIVE',
-    accounts: 100,
+    accounts: '',
     status: 'Connected',
     contactPerson: '',
     email: '',
     phone: '',
-    country: 'United Kingdom',
+    country: '',
     license: '',
     serverName: '',
-    serverIp: '198.51.100.22:443',
+    serverIp: '',
     platform: 'MetaTrader 5',
-    planId: packages[0]?.id || 'plan-cross',
-    notes: 'Registered via SuperAdmin console.'
+    planId: packages[0]?.id || '',
+    notes: ''
   });
 
   // Auto assign next sequential Manager ID when modal opens
   React.useEffect(() => {
     if (isOpen) {
-      const nextId = (100000 + (brokers?.length || 0) + 1).toString();
+      const nextId = (1000 + (brokers?.length || 0) + 1).toString();
       setFormData(prev => ({
         ...prev,
         managerId: prev.managerId || nextId
@@ -37,18 +37,7 @@ export default function AddBrokerModal({ isOpen, onClose }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => {
-      const next = { ...prev, [name]: value };
-      if (name === 'name' && value) {
-        if (!prev.serverName) {
-          next.serverName = `${value.replace(/[^a-zA-Z0-9]/g, '')}-Live01`;
-        }
-        if (!prev.email) {
-          next.email = `compliance@${value.toLowerCase().replace(/[^a-z0-9]/g, '')}.com`;
-        }
-      }
-      return next;
-    });
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = (e) => {
@@ -143,7 +132,6 @@ export default function AddBrokerModal({ isOpen, onClose }) {
                   type="text" 
                   className="form-control" 
                   name="name" 
-                  placeholder="e.g. FP Markets Global"
                   value={formData.name}
                   onChange={handleChange}
                   required
@@ -156,7 +144,6 @@ export default function AddBrokerModal({ isOpen, onClose }) {
                   type="text" 
                   className="form-control" 
                   name="country" 
-                  placeholder="e.g. Australia, UK, Cyprus"
                   value={formData.country}
                   onChange={handleChange}
                 />
@@ -168,7 +155,6 @@ export default function AddBrokerModal({ isOpen, onClose }) {
                   type="text" 
                   className="form-control" 
                   name="license" 
-                  placeholder="e.g. ASIC #373387 / FCA #684312"
                   value={formData.license}
                   onChange={handleChange}
                 />
@@ -180,7 +166,6 @@ export default function AddBrokerModal({ isOpen, onClose }) {
                   type="text" 
                   className="form-control" 
                   name="contactPerson" 
-                  placeholder="e.g. Arthur Pendelton"
                   value={formData.contactPerson}
                   onChange={handleChange}
                 />
@@ -192,7 +177,6 @@ export default function AddBrokerModal({ isOpen, onClose }) {
                   type="email" 
                   className="form-control" 
                   name="email" 
-                  placeholder="e.g. compliance@broker.com"
                   value={formData.email}
                   onChange={handleChange}
                   required
@@ -205,7 +189,6 @@ export default function AddBrokerModal({ isOpen, onClose }) {
                   type="text" 
                   className="form-control" 
                   name="phone" 
-                  placeholder="e.g. +44 20 7946 0192"
                   value={formData.phone}
                   onChange={handleChange}
                 />
@@ -232,7 +215,6 @@ export default function AddBrokerModal({ isOpen, onClose }) {
                   type="text" 
                   className="form-control font-tabular" 
                   name="serverName" 
-                  placeholder="e.g. FPMarkets-Live02"
                   value={formData.serverName}
                   onChange={handleChange}
                   required
@@ -245,7 +227,6 @@ export default function AddBrokerModal({ isOpen, onClose }) {
                   type="text" 
                   className="form-control font-tabular" 
                   name="serverIp" 
-                  placeholder="e.g. 198.51.100.22:443"
                   value={formData.serverIp}
                   onChange={handleChange}
                 />

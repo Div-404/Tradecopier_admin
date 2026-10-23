@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSuperAdmin } from '../../context/SuperAdminContext';
-import { apiAddAdmPkgCustomize } from '../../services/api';
+import { apiAddUserCustomizePkg } from '../../services/api';
 
 /**
  * CustomizePackageModal
@@ -17,35 +17,36 @@ export default function CustomizePackageModal({ isOpen, onClose, onPackageCustom
   const { brokers, packages, showToast } = useSuperAdmin();
   const [submitting, setSubmitting] = useState(false);
 
-  // Form state matching Image 2 & BIL_PKG_CUSTOMIZE
+  // Form state matching Image 2 & BIL_PKG_CUSTOMIZE (Zero prefill)
   const [userId, setUserId] = useState('');
   const [pkgId, setPkgId] = useState('');
   const [amount, setAmount] = useState('');
-  const [validityDays, setValidityDays] = useState(30);
+  const [validityDays, setValidityDays] = useState('');
   const [applyCoupan, setApplyCoupan] = useState('ENABLE'); // 'ENABLE' (1) | 'DISABLE' (2)
-  const [status, setStatus] = useState('ENABLE'); // 'ENABLE' (2 - Active) | 'DISABLE' (3 - Inactive)
+  const [status, setStatus] = useState('ENABLE'); // 'ENABLE' (1 - Active) | 'DISABLE' (2 - Inactive)
 
-  // Reset or initialize when modal opens
+  // Reset when modal opens
   useEffect(() => {
     if (isOpen) {
-      if (brokers.length > 0 && !userId) {
-        setUserId(brokers[0].profileId || brokers[0].managerId || '');
-      }
-      if (packages.length > 0 && !pkgId) {
-        setPkgId(packages[0].pkgId || packages[0].id || '');
-        setAmount(packages[0].monthlyPrice ?? '');
-        setValidityDays(packages[0].durationDays || 30);
-      }
+      setUserId('');
+      setPkgId('');
+      setAmount('');
+      setValidityDays('');
+      setApplyCoupan('ENABLE');
+      setStatus('ENABLE');
     }
-  }, [isOpen, brokers, packages, userId, pkgId]);
+  }, [isOpen]);
 
-  // When package selection changes, pre-fill amount and validity
+  // When package selection changes, pre-fill amount and validity from selected package
   const handlePackageChange = (selectedId) => {
     setPkgId(selectedId);
     const found = packages.find(p => String(p.pkgId || p.id) === String(selectedId));
     if (found) {
-      setAmount(found.monthlyPrice ?? 0);
-      setValidityDays(found.durationDays || 30);
+      setAmount(found.monthlyPrice ?? '');
+      setValidityDays(found.durationDays || '');
+    } else {
+      setAmount('');
+      setValidityDays('');
     }
   };
 
@@ -69,14 +70,14 @@ export default function CustomizePackageModal({ isOpen, onClose, onPackageCustom
     setSubmitting(true);
     try {
       const selectedPkg = packages.find(p => String(p.pkgId || p.id) === String(pkgId));
-      const res = await apiAddAdmPkgCustomize({
+      const res = await apiAddUserCustomizePkg({
         profileId: Number(userId),
         pkgId: Number(pkgId),
         amt: Number(amount),
         pkgCode: selectedPkg?.name || `PKG-${pkgId}`,
         coupanApply: applyCoupan === 'ENABLE' ? 1 : 2,
         validityDays: Number(validityDays || 30),
-        status: status === 'ENABLE' ? 2 : 3, // 2 = Active, 3 = Inactive
+        status: status === 'ENABLE' ? 1 : 2, // 1 = Active, 2 = Inactive
       });
 
       showToast?.(res.MSG_USER || 'Customized package created successfully!', 'success');
@@ -197,7 +198,6 @@ export default function CustomizePackageModal({ isOpen, onClose, onPackageCustom
                     min="0"
                     className="form-control rounded-end-3 px-3"
                     style={{ height: '44px', fontSize: '0.9rem', borderColor: '#e2e8f0' }}
-                    placeholder="Enter agreed package price"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
                     required
@@ -215,7 +215,6 @@ export default function CustomizePackageModal({ isOpen, onClose, onPackageCustom
                   min="1"
                   className="form-control rounded-3 px-3"
                   style={{ height: '44px', fontSize: '0.9rem', borderColor: '#e2e8f0' }}
-                  placeholder="e.g. 30, 90, 365"
                   value={validityDays}
                   onChange={(e) => setValidityDays(e.target.value)}
                   required

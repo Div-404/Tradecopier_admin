@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useSuperAdmin } from '../../context/SuperAdminContext';
-import { apiAddAdmCoupon } from '../../services/api';
+import { apiAddBilCoupan } from '../../services/api';
 
 /**
  * CreateCouponModal
- * Implements C# StructNxLib:
- * COUPANx_ADD: { Key, CoupanID, Coupan: { Value, Coupan, Comment, Status, Entry, Type, MinValue, MaxProfit } }
+ * Implements Postman ADD_BIL_COUPAN:
+ * { Key: "", Coupan: { Value, Coupan, Status, Entry, Type, Min, Max, Comment } }
+ * Zero prefilled values & zero placeholders.
  */
 export default function CreateCouponModal({ isOpen, onClose, onCouponCreated }) {
   const { showToast } = useSuperAdmin();
@@ -18,7 +19,7 @@ export default function CreateCouponModal({ isOpen, onClose, onCouponCreated }) 
     entry: 2, // 1 = Single Use, 2 = Multiple Use
     minValue: '',
     maxProfit: '',
-    status: 2, // 2 = Active, 3 = Inactive
+    status: 5, // 5 = Active/Success (Postman: 1=PENDING, 2=CANCELLED, 3=REJECTED, 4=IN_PROCESS, 5=SUCCESS, 6=FREEZE)
     comment: ''
   });
 
@@ -41,13 +42,13 @@ export default function CreateCouponModal({ isOpen, onClose, onCouponCreated }) 
 
     setSubmitting(true);
     try {
-      const res = await apiAddAdmCoupon({
+      const res = await apiAddBilCoupan({
         coupan: form.coupan.toUpperCase().trim(),
         value: Number(form.value),
         type: Number(form.type),
         entry: Number(form.entry),
-        minValue: Number(form.minValue || 0),
-        maxProfit: Number(form.maxProfit || 0),
+        min: Number(form.minValue || 0),
+        max: Number(form.maxProfit || 0),
         status: Number(form.status),
         comment: form.comment.trim(),
       });
@@ -56,12 +57,12 @@ export default function CreateCouponModal({ isOpen, onClose, onCouponCreated }) 
       if (onCouponCreated) {
         onCouponCreated({
           ...form,
-          coupan: form.coupan.toUpperCase().trim(),
+          Coupan: form.coupan.toUpperCase().trim(),
           Value: Number(form.value),
           Type: Number(form.type),
           Entry: Number(form.entry),
-          MinValue: Number(form.minValue || 0),
-          MaxProfit: Number(form.maxProfit || 0),
+          Min: Number(form.minValue || 0),
+          Max: Number(form.maxProfit || 0),
           Status: Number(form.status),
           Comment: form.comment.trim(),
           Timestamp: new Date().toISOString()
@@ -69,7 +70,7 @@ export default function CreateCouponModal({ isOpen, onClose, onCouponCreated }) 
       }
       onClose();
     } catch (err) {
-      console.error('ADD_ADM_COUPON Error:', err);
+      console.error('ADD_BIL_COUPAN Error:', err);
       showToast?.('Error creating coupon: ' + err.message, 'error');
     } finally {
       setSubmitting(false);
@@ -128,7 +129,6 @@ export default function CreateCouponModal({ isOpen, onClose, onCouponCreated }) 
                     type="text"
                     className="form-control rounded-end-3 px-3 text-uppercase fw-bold"
                     style={{ height: '44px', fontSize: '0.95rem', letterSpacing: '0.5px', borderColor: '#e2e8f0' }}
-                    placeholder="e.g. SAVE20, PROMOTION2026"
                     value={form.coupan}
                     onChange={(e) => handleChange('coupan', e.target.value)}
                     required
@@ -162,7 +162,6 @@ export default function CreateCouponModal({ isOpen, onClose, onCouponCreated }) 
                   step="0.01"
                   className="form-control rounded-3 px-3"
                   style={{ height: '44px', fontSize: '0.9rem', borderColor: '#e2e8f0' }}
-                  placeholder={form.type === 1 ? 'e.g. 20 for 20%' : 'e.g. 100 for $100'}
                   value={form.value}
                   onChange={(e) => handleChange('value', e.target.value)}
                   required
@@ -196,8 +195,10 @@ export default function CreateCouponModal({ isOpen, onClose, onCouponCreated }) 
                   value={form.status}
                   onChange={(e) => handleChange('status', Number(e.target.value))}
                 >
-                  <option value={2}>Active</option>
-                  <option value={3}>Inactive</option>
+                  <option value={5}>Active</option>
+                  <option value={1}>Pending</option>
+                  <option value={6}>Frozen</option>
+                  <option value={2}>Cancelled</option>
                 </select>
               </div>
 
@@ -212,7 +213,6 @@ export default function CreateCouponModal({ isOpen, onClose, onCouponCreated }) 
                   step="0.01"
                   className="form-control rounded-3 px-3"
                   style={{ height: '44px', fontSize: '0.9rem', borderColor: '#e2e8f0' }}
-                  placeholder="Optional minimum price"
                   value={form.minValue}
                   onChange={(e) => handleChange('minValue', e.target.value)}
                 />
@@ -229,7 +229,6 @@ export default function CreateCouponModal({ isOpen, onClose, onCouponCreated }) 
                   step="0.01"
                   className="form-control rounded-3 px-3"
                   style={{ height: '44px', fontSize: '0.9rem', borderColor: '#e2e8f0' }}
-                  placeholder="Max cap (e.g. 200)"
                   value={form.maxProfit}
                   onChange={(e) => handleChange('maxProfit', e.target.value)}
                 />
@@ -244,7 +243,6 @@ export default function CreateCouponModal({ isOpen, onClose, onCouponCreated }) 
                   className="form-control rounded-3 px-3 py-2"
                   rows="2"
                   style={{ fontSize: '0.9rem', borderColor: '#e2e8f0' }}
-                  placeholder="e.g. 20% discount on initial broker subscription"
                   value={form.comment}
                   onChange={(e) => handleChange('comment', e.target.value)}
                 ></textarea>

@@ -14,19 +14,19 @@ export default function UserTypeUrlModal({ isOpen, onClose, initialProfileId, br
   const { brokers, showToast, refreshBrokerPlanFromUrls } = useSuperAdmin();
 
   const [profileId, setProfileId] = useState(() => {
-    return initialProfileId || broker?.managerId || broker?.profileId || (brokers.length > 0 ? String(brokers[0].managerId || brokers[0].profileId || '1000') : '1000');
+    return initialProfileId || broker?.managerId || broker?.profileId || (brokers.length > 0 ? String(brokers[0].managerId || brokers[0].profileId || '') : '');
   });
   const [urlsList, setUrlsList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Add/Edit form
+  // Add/Edit form (Zero prefill)
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
     type: '1',
-    url: 'https://tradercopierfx.traderscabinet.com',
+    url: '',
     oStatus: '2',
-    duration: '60',
+    duration: '',
   });
 
   // Fetch URLs on open / profile change
@@ -39,25 +39,24 @@ export default function UserTypeUrlModal({ isOpen, onClose, initialProfileId, br
       // API returns { Profile, lstURL: [...] }
       const urls = Array.isArray(data?.lstURL) ? data.lstURL : [];
       setUrlsList(urls);
-      if (refreshBrokerPlanFromUrls) {
-        refreshBrokerPlanFromUrls(pid);
-      }
     } catch (err) {
       console.error('GET_USER_TYPE_URL error:', err);
       setError(err.message);
       setUrlsList([]);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
+  const targetProfileId = String(initialProfileId || broker?.managerId || broker?.profileId || (brokers.length > 0 ? (brokers[0].managerId || brokers[0].profileId || '') : ''));
+
   useEffect(() => {
-    if (isOpen) {
-      const targetId = String(initialProfileId || broker?.managerId || broker?.profileId || '1000');
-      setProfileId(targetId);
-      fetchUrls(targetId);
+    if (isOpen && targetProfileId) {
+      setProfileId(targetProfileId);
+      fetchUrls(targetProfileId);
       setShowForm(false);
     }
-  }, [isOpen, initialProfileId, broker]);
+  }, [isOpen, targetProfileId]);
 
   if (!isOpen) return null;
 
@@ -84,12 +83,16 @@ export default function UserTypeUrlModal({ isOpen, onClose, initialProfileId, br
       setShowForm(false);
       // Refresh list
       await fetchUrls(profileId);
+      if (refreshBrokerPlanFromUrls) {
+        refreshBrokerPlanFromUrls(profileId);
+      }
     } catch (err) {
       console.error('ADD_EDIT_USER_TYPE_URL error:', err);
       setError(err.message);
       showToast('API Error: ' + err.message, 'error');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   // DELETE
@@ -102,12 +105,16 @@ export default function UserTypeUrlModal({ isOpen, onClose, initialProfileId, br
       const res = await apiDelUserTypeUrl(copierType, profileId);
       showToast(res.MSG_USER || 'Configuration deleted.', 'success');
       await fetchUrls(profileId);
+      if (refreshBrokerPlanFromUrls) {
+        refreshBrokerPlanFromUrls(profileId);
+      }
     } catch (err) {
       console.error('DEL_USER_TYPE_URL error:', err);
       setError(err.message);
       showToast('API Error: ' + err.message, 'error');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const openEditForm = (item) => {
@@ -126,9 +133,9 @@ export default function UserTypeUrlModal({ isOpen, onClose, initialProfileId, br
     const nextType = [1,2,3,4,5,6,7,8].find(t => !usedTypes.includes(t)) || 1;
     setFormData({
       type: String(nextType),
-      url: 'https://tradercopierfx.traderscabinet.com',
+      url: '',
       oStatus: '2',
-      duration: '60',
+      duration: '',
     });
     setShowForm(true);
   };
@@ -334,7 +341,6 @@ export default function UserTypeUrlModal({ isOpen, onClose, initialProfileId, br
                   className="form-control form-control-sm font-monospace"
                   value={formData.url}
                   onChange={(e) => setFormData(p => ({ ...p, url: e.target.value }))}
-                  placeholder="https://tradercopierfx.traderscabinet.com"
                   required
                 />
               </div>

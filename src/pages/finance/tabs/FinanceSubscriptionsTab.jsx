@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useSuperAdmin } from '../../../context/SuperAdminContext';
-import { apiGetAdmUserSubscribed, BLC_STATUS_MAP } from '../../../services/api';
+import { apiGetAdmUsrSubscribedPkg, BLC_STATUS_MAP } from '../../../services/api';
 
 export default function FinanceSubscriptionsTab() {
   const { brokers, packages, showToast } = useSuperAdmin();
@@ -14,50 +14,34 @@ export default function FinanceSubscriptionsTab() {
   const [selectedPkgId, setSelectedPkgId] = useState('ALL');
   const [selectedStatus, setSelectedStatus] = useState('ALL');
 
-  // Load subscriptions from API with fallback to broker subscriber context
+  // Load subscriptions from API (GET_ADM_USR_SUBSCRIBED_PKG)
   const loadSubscriptions = async () => {
     setLoading(true);
     try {
-      const res = await apiGetAdmUserSubscribed();
+      const res = await apiGetAdmUsrSubscribedPkg({ initial: 1, maxCount: 50 });
+      console.log("res",res);
       const list = res?.lstSubscribe || [];
 
       if (Array.isArray(list) && list.length > 0) {
-        setSubscriptions(list);
-      } else {
-        // Synthesize dynamic user subscriptions from current brokers and packages as fallback
-        const mockSubs = brokers.map((b, idx) => {
-          const pkg = packages[idx % (packages.length || 1)] || { pkgId: 101, name: 'Internal Trade Copier' };
-          const pId = Number(b.profileId || b.managerId || 1000 + idx);
-          const daysLeft = 20 - (idx * 5);
-          const validDate = new Date();
-          validDate.setDate(validDate.getDate() + daysLeft);
-          const createdDate = new Date();
-          createdDate.setDate(createdDate.getDate() - (30 - daysLeft));
-
-          // 2 = Active, 1 = Pending, 3 = Expired
-          const statusCode = daysLeft <= 0 ? 3 : (idx === 2 ? 1 : 2);
-
+        // Correlate with brokers list to enrich user snapshot (Name, Email, Phone)
+        const enriched = list.map(sub => {
+          const u = sub.oUser || {};
+          const matchedBroker = brokers.find(b => 
+            String(b.profileId || b.managerId || b.id?.replace('brk-', '')) === String(u.Profile)
+          );
           return {
-            Pkg: pkg.name || 'Internal Trade Copier',
-            oUser: {
-              Profile: pId,
-              Name: b.name || `Broker ${pId}`,
-              Email: b.email || `broker${pId}@gmail.com`,
-              Phone: b.phone || '+1 555-0199',
-            },
-            oPkg: {
-              Profile: pId,
-              PkgId: Number(pkg.pkgId || (100 + (idx % 8))),
-              TransID: 1002938491 + idx,
-              TransRef: `TXN-REF-${pId}-${idx + 101}`,
-              dtCreated: { Tm_Str: createdDate.toLocaleDateString() },
-              dtValid: { Tm_Str: validDate.toLocaleDateString() },
-              oStatus: statusCode,
-              daysRemaining: daysLeft,
+            ...sub,
+            resolvedUser: {
+              Profile: u.Profile,
+              Name: u.Name || matchedBroker?.name || `Profile #${u.Profile}`,
+              Email: u.Email || matchedBroker?.email || '',
+              Phone: u.Phone || matchedBroker?.phone || '',
             }
           };
         });
-        setSubscriptions(mockSubs);
+        setSubscriptions(enriched);
+      } else {
+        setSubscriptions([]);
       }
     } catch (err) {
       console.warn("Failed to load subscriptions:", err);
@@ -83,7 +67,7 @@ export default function FinanceSubscriptionsTab() {
   // Filter logic: User information (Name, Email, Phone) AND PkgID AND Status
   const filteredSubscriptions = useMemo(() => {
     return subscriptions.filter((sub) => {
-      const user = sub.oUser || {};
+      const user = sub.resolvedUser || sub.oUser || {};
       const pkg = sub.oPkg || {};
 
       // User search across Name, Email, and Phone
@@ -129,7 +113,7 @@ export default function FinanceSubscriptionsTab() {
                 <span className="text-secondary fw-semibold" style={{ fontSize: '0.8rem' }}>Total Subscriptions</span>
                 <h4 className="fw-bolder text-dark m-0 mt-1">{subscriptions.length}</h4>
               </div>
-              <div className="rounded-3 d-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary" style={{ width: '42px', height: '42px' }}>
+              <div className="rounded-3 d-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-dark" style={{ width: '42px', height: '42px' }}>
                 <i className="bi bi-people-fill fs-5"></i>
               </div>
             </div>
@@ -141,10 +125,10 @@ export default function FinanceSubscriptionsTab() {
             <div className="d-flex align-items-center justify-content-between">
               <div>
                 <span className="text-secondary fw-semibold" style={{ fontSize: '0.8rem' }}>Active Plans</span>
-                <h4 className="fw-bolder text-success m-0 mt-1">{activeCount}</h4>
+                <h4 className="fw-bolder text-dark m-0 mt-1">{activeCount}</h4>
               </div>
-              <div className="rounded-3 d-flex align-items-center justify-content-center bg-success bg-opacity-10 text-success" style={{ width: '42px', height: '42px' }}>
-                <i className="bi bi-check-circle-fill fs-5"></i>
+              <div className="rounded-3 d-flex align-items-center justify-content-center bg-success bg-opacity-10 text-dark" style={{ width: '42px', height: '42px' }}>
+                <i className="bi bi-check-circle-fill fs-5 text-success"></i>
               </div>
             </div>
           </div>
@@ -155,9 +139,9 @@ export default function FinanceSubscriptionsTab() {
             <div className="d-flex align-items-center justify-content-between">
               <div>
                 <span className="text-secondary fw-semibold" style={{ fontSize: '0.8rem' }}>Pending Approval</span>
-                <h4 className="fw-bolder text-warning m-0 mt-1">{pendingCount}</h4>
+                <h4 className="fw-bolder text-dark m-0 mt-1">{pendingCount}</h4>
               </div>
-              <div className="rounded-3 d-flex align-items-center justify-content-center bg-warning bg-opacity-10 text-warning" style={{ width: '42px', height: '42px' }}>
+              <div className="rounded-3 d-flex align-items-center justify-content-center bg-warning bg-opacity-15 text-dark" style={{ width: '42px', height: '42px' }}>
                 <i className="bi bi-hourglass-split fs-5"></i>
               </div>
             </div>
@@ -169,9 +153,9 @@ export default function FinanceSubscriptionsTab() {
             <div className="d-flex align-items-center justify-content-between">
               <div>
                 <span className="text-secondary fw-semibold" style={{ fontSize: '0.8rem' }}>Expired / Inactive</span>
-                <h4 className="fw-bolder text-danger m-0 mt-1">{expiredCount}</h4>
+                <h4 className="fw-bolder text-dark m-0 mt-1">{expiredCount}</h4>
               </div>
-              <div className="rounded-3 d-flex align-items-center justify-content-center bg-danger bg-opacity-10 text-danger" style={{ width: '42px', height: '42px' }}>
+              <div className="rounded-3 d-flex align-items-center justify-content-center bg-danger bg-opacity-10 text-dark" style={{ width: '42px', height: '42px' }}>
                 <i className="bi bi-exclamation-octagon-fill fs-5"></i>
               </div>
             </div>
@@ -196,7 +180,6 @@ export default function FinanceSubscriptionsTab() {
                   type="text"
                   className="form-control bg-white rounded-end-3 px-3"
                   style={{ height: '42px', fontSize: '0.88rem', borderColor: '#e2e8f0' }}
-                  placeholder="Filter User by Name, Email, or Phone..."
                   value={userQuery}
                   onChange={(e) => setUserQuery(e.target.value)}
                 />
@@ -306,7 +289,7 @@ export default function FinanceSubscriptionsTab() {
                 </tr>
               ) : (
                 filteredSubscriptions.map((sub, idx) => {
-                  const user = sub.oUser || {};
+                  const user = sub.resolvedUser || sub.oUser || {};
                   const pkg = sub.oPkg || {};
                   const statusInfo = BLC_STATUS_MAP[pkg.oStatus] || BLC_STATUS_MAP[0];
 
@@ -322,7 +305,7 @@ export default function FinanceSubscriptionsTab() {
                               width: '38px', 
                               height: '38px', 
                               backgroundColor: '#e6f4ea', 
-                              color: '#166534',
+                              color: '#000000',
                               fontSize: '0.82rem',
                               border: '2px solid #bbf7d0'
                             }}
@@ -331,7 +314,7 @@ export default function FinanceSubscriptionsTab() {
                           </div>
                           <div>
                             <div className="fw-bold text-dark">{user.Name || `Profile #${user.Profile}`}</div>
-                            <span className="badge rounded-pill bg-light text-muted border font-tabular" style={{ fontSize: '0.68rem', fontWeight: 600 }}>
+                            <span className="badge rounded-pill bg-light text-dark border font-tabular mt-1" style={{ fontSize: '0.68rem', fontWeight: 600 }}>
                               Profile ID: {user.Profile}
                             </span>
                           </div>
@@ -340,7 +323,7 @@ export default function FinanceSubscriptionsTab() {
 
                       {/* Contact Info (Email & Phone) */}
                       <td className="py-3">
-                        <div className="d-flex flex-column gap-1">
+                        <div className="d-flex flex-column gap-2">
                           <div className="d-flex align-items-center gap-2 text-dark fw-medium">
                             <i className="bi bi-envelope text-secondary me-2" style={{ fontSize: '0.85rem' }}></i>
                             <span>{user.Email || 'No Email'}</span>
@@ -355,14 +338,14 @@ export default function FinanceSubscriptionsTab() {
                       {/* Package Name & PkgID */}
                       <td className="py-3">
                         <div className="fw-bold text-dark">{sub.Pkg || `Package ${pkg.PkgId}`}</div>
-                        <span className="badge rounded-pill bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1 mt-1 font-tabular" style={{ fontSize: '0.72rem', fontWeight: 600 }}>
+                        <span className="badge rounded-pill bg-success bg-opacity-10 text-black border border-success border-opacity-25 px-2 py-1 mt-1 font-tabular" style={{ fontSize: '0.72rem', fontWeight: 600 }}>
                           PkgID: #{pkg.PkgId}
                         </span>
                       </td>
 
                       {/* Validity & Created */}
                       <td className="py-3">
-                        <div className="d-flex flex-column gap-1" style={{ fontSize: '0.8rem' }}>
+                        <div className="d-flex flex-column gap-2" style={{ fontSize: '0.8rem' }}>
                           <span className="text-dark fw-medium">
                             Valid Until: <strong className="text-primary">{pkg.dtValid?.Tm_Str || 'N/A'}</strong>
                           </span>
@@ -372,18 +355,17 @@ export default function FinanceSubscriptionsTab() {
                         </div>
                       </td>
 
-                      {/* Status */}
+                      {/* Status (Rule 1: High-Contrast text-black) */}
                       <td className="py-3">
                         <span 
-                          className="badge rounded-pill px-3 py-1 fw-bold d-inline-flex align-items-center gap-2"
+                          className="badge rounded-pill px-3 py-1 fw-bold d-inline-flex align-items-center gap-2 text-black"
                           style={{ 
                             backgroundColor: statusInfo.bg, 
-                            color: statusInfo.color,
                             fontSize: '0.74rem',
-                            border: `1px solid ${statusInfo.color}30`
+                            border: `1px solid ${statusInfo.border || '#cbd5e1'}`
                           }}
                         >
-                          <span className="rounded-circle" style={{ width: '6px', height: '6px', backgroundColor: statusInfo.color }}></span>
+                          <span className="rounded-circle" style={{ width: '6px', height: '6px', backgroundColor: '#16a34a' }}></span>
                           {statusInfo.label}
                         </span>
                       </td>

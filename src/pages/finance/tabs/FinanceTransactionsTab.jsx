@@ -61,36 +61,7 @@ export default function FinanceTransactionsTab() {
         });
         setPkgTrans(normalized);
       } else {
-        // Fallback synthetic package transactions matching BLC_PKG_TRANS
-        const mockList = brokers.map((b, idx) => {
-          const pId = Number(b.profileId || b.managerId || 1000 + idx);
-          const pkg = packages[idx % (packages.length || 1)] || { pkgId: 101, name: 'Internal Trade Copier', monthlyPrice: 499 };
-          const baseAmt = pkg.monthlyPrice || 499;
-          const hasDiscount = idx % 2 === 1;
-          const discountAmt = hasDiscount ? 50 : 0;
-          const finalAmt = baseAmt - discountAmt;
-
-          const createdDate = new Date();
-          createdDate.setDate(createdDate.getDate() - (idx * 4 + 1));
-
-          return {
-            TransID: 1009283401 + idx,
-            Profile: pId,
-            PkgId: Number(pkg.pkgId || (101 + idx)),
-            PkgName: pkg.name || 'Internal Trade Copier',
-            BrokerName: b.name || `Broker ${pId}`,
-            TransRef: `TXN-REF-${pId}-${idx + 101}`,
-            Amt: baseAmt,
-            DisAmt: discountAmt,
-            FinalAmt: finalAmt,
-            CoupanId: hasDiscount ? 1 : 0,
-            CoupanDis: hasDiscount ? 10 : 0,
-            Mode: 1, // 1 = Direct Gateway
-            oStatus: idx === 2 ? 1 : (idx === 4 ? 2 : 3), // 1 = Pending, 2 = Failed, 3 = Success
-            dtCreated: { Tm_Str: createdDate.toLocaleDateString() },
-          };
-        });
-        setPkgTrans(mockList);
+        setPkgTrans([]);
       }
     } catch (err) {
       console.warn("Failed to load package transactions:", err);
@@ -219,7 +190,6 @@ export default function FinanceTransactionsTab() {
                   type="text"
                   className="form-control bg-white rounded-3 ps-5"
                   style={{ height: '42px', fontSize: '0.88rem', borderColor: '#e2e8f0' }}
-                  placeholder="Search TransID, Ref, or User..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -316,7 +286,7 @@ export default function FinanceTransactionsTab() {
                       {/* Package Plan */}
                       <td className="py-3">
                         <div className="fw-medium text-dark">{t.PkgName || `Package #${t.PkgId}`}</div>
-                        <span className="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1" style={{ fontSize: '0.7rem' }}>
+                        <span className="badge bg-success bg-opacity-10 text-black border border-success border-opacity-25 px-2 py-1" style={{ fontSize: '0.7rem' }}>
                           PkgID: #{t.PkgId}
                         </span>
                       </td>
