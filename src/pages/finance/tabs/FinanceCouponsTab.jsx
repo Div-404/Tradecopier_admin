@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSuperAdmin } from '../../../context/SuperAdminContext';
 import CreateCouponModal from '../../../components/modals/CreateCouponModal';
+import CouponDetailsModal from '../../../components/modals/CouponDetailsModal';
 import { apiGetBilCoupan, apiDelBilCoupan, COUPON_STATUS_MAP } from '../../../services/api';
 
 export default function FinanceCouponsTab() {
@@ -9,6 +10,9 @@ export default function FinanceCouponsTab() {
   const [coupons, setCoupons] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [selectedCouponId, setSelectedCouponId] = useState(null);
+  const [selectedCouponData, setSelectedCouponData] = useState(null);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
   // Load coupons from server
   const fetchCoupons = async () => {
@@ -63,12 +67,26 @@ export default function FinanceCouponsTab() {
     }
   };
 
+  const handleViewDetails = (item, idx) => {
+    const cId = item.CoupanID || item.ID || item.Reserve1 || idx + 1;
+    setSelectedCouponId(cId);
+    setSelectedCouponData(item);
+    setIsDetailsOpen(true);
+  };
+
   return (
     <div>
       <CreateCouponModal
         isOpen={isCreateOpen}
         onClose={() => setIsCreateOpen(false)}
         onCouponCreated={handleCouponCreated}
+      />
+
+      <CouponDetailsModal
+        isOpen={isDetailsOpen}
+        coupanId={selectedCouponId}
+        initialData={selectedCouponData}
+        onClose={() => setIsDetailsOpen(false)}
       />
 
       {/* Top Header */}
@@ -116,18 +134,19 @@ export default function FinanceCouponsTab() {
           <table className="table table-hover align-middle mb-0" style={{ fontSize: '0.88rem' }}>
             <thead className="table-light text-secondary fw-semibold border-bottom" style={{ fontSize: '0.76rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
               <tr>
-                <th className="ps-4 py-3">Code & Comment</th>
+                <th className="ps-4 py-3">Coupon Code</th>
                 <th className="py-3">Discount</th>
-                <th className="py-3">Policy / Usage</th>
+                <th className="py-3">Usage Policy</th>
                 <th className="py-3">Min / Max Cap</th>
                 <th className="py-3">Status</th>
+                <th className="py-3">Comment</th>
                 <th className="pe-4 py-3 text-end">Actions</th>
               </tr>
             </thead>
             <tbody>
               {coupons.length === 0 ? (
                 <tr>
-                  <td colSpan="6" className="text-center py-5 text-muted">
+                  <td colSpan="7" className="text-center py-5 text-muted">
                     <i className="bi bi-tag fs-1 d-block mb-2 text-secondary opacity-50"></i>
                     <h6 className="fw-bold text-dark">No Promotional Coupons Found</h6>
                     <span className="text-secondary" style={{ fontSize: '0.82rem' }}>
@@ -145,16 +164,9 @@ export default function FinanceCouponsTab() {
                   return (
                     <tr key={idx} className="transition-all">
                       <td className="ps-4 py-3">
-                        <div className="d-flex align-items-center gap-2">
-                          <span className="badge font-tabular px-3 py-1 text-dark border bg-light" style={{ fontSize: '0.85rem', fontWeight: 700, letterSpacing: '0.5px' }}>
-                            {c.Coupan}
-                          </span>
-                        </div>
-                        {c.Comment && (
-                          <span className="text-secondary d-block mt-1" style={{ fontSize: '0.76rem', maxWidth: '280px' }}>
-                            {c.Comment}
-                          </span>
-                        )}
+                        <span className="badge font-tabular px-3 py-1 text-dark border bg-light" style={{ fontSize: '0.85rem', fontWeight: 700, letterSpacing: '0.5px' }}>
+                          {c.Coupan}
+                        </span>
                       </td>
 
                       <td className="py-3">
@@ -193,15 +205,33 @@ export default function FinanceCouponsTab() {
                         </span>
                       </td>
 
+                      <td className="py-3">
+                        <span className="text-secondary" style={{ fontSize: '0.78rem' }}>
+                          {c.Comment || '-'}
+                        </span>
+                      </td>
+
                       <td className="pe-4 py-3 text-end">
-                        <button
-                          type="button"
-                          className="btn btn-sm btn-outline-danger border rounded-2 px-2 py-1"
-                          onClick={() => handleDeleteCoupon(item, idx)}
-                          title="Delete Coupon"
-                        >
-                          <i className="bi bi-trash3"></i>
-                        </button>
+                        <div className="d-flex align-items-center justify-content-end gap-2">
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-light border rounded-2 px-2.5 py-1 text-dark d-inline-flex align-items-center gap-1"
+                            style={{ fontSize: '0.78rem' }}
+                            onClick={() => handleViewDetails(item, idx)}
+                            title="View Coupon Details"
+                          >
+                            <i className="bi bi-info-circle me-1"></i>
+                            <span>Details</span>
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-outline-danger border rounded-2 px-2 py-1"
+                            onClick={() => handleDeleteCoupon(item, idx)}
+                            title="Delete Coupon"
+                          >
+                            <i className="bi bi-trash3"></i>
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );

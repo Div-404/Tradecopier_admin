@@ -259,10 +259,11 @@ export default function FinanceSubscriptionsTab() {
           <table className="table table-hover align-middle mb-0" style={{ fontSize: '0.88rem' }}>
             <thead className="table-light text-secondary fw-semibold border-bottom" style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
               <tr>
-                <th className="ps-4 py-3">Broker / User Information</th>
-                <th className="py-3">Contact (Email & Phone)</th>
-                <th className="py-3">Package / PkgID</th>
-                <th className="py-3">Validity & Created</th>
+                <th className="ps-4 py-3">Broker Name</th>
+                <th className="py-3">Email</th>
+                <th className="py-3">PACKAGE</th>
+                <th className="py-3">Subscribed On</th>
+                <th className="py-3">Valid Untill</th>
                 <th className="py-3">Subscription Status</th>
                 <th className="pe-4 py-3 text-end">Actions</th>
               </tr>
@@ -346,12 +347,22 @@ export default function FinanceSubscriptionsTab() {
                       {/* Validity & Created */}
                       <td className="py-3">
                         <div className="d-flex flex-column gap-2" style={{ fontSize: '0.8rem' }}>
-                          <span className="text-dark fw-medium">
+                          {/* <span className="text-dark fw-medium">
                             Valid Until: <strong className="text-primary">{pkg.dtValid?.Tm_Str || 'N/A'}</strong>
-                          </span>
+                          </span> */}
                           <span className="text-secondary" style={{ fontSize: '0.74rem' }}>
-                            Created: {pkg.dtCreated?.Tm_Str || 'N/A'}
+                            {pkg.dtCreated?.Tm_Str || 'N/A'}
                           </span>
+                        </div>
+                      </td>
+                      <td className="py-3">
+                        <div className="d-flex flex-column gap-2" style={{ fontSize: '0.8rem' }}>
+                          <span className="text-dark fw-medium">
+                            <strong className="text-primary">{pkg.dtValid?.Tm_Str || 'N/A'}</strong>
+                          </span>
+                          {/* <span className="text-secondary" style={{ fontSize: '0.74rem' }}>
+                            Created: {pkg.dtCreated?.Tm_Str || 'N/A'}
+                          </span> */}
                         </div>
                       </td>
 

@@ -23,7 +23,7 @@ export default function CustomizePackageModal({ isOpen, onClose, onPackageCustom
   const [amount, setAmount] = useState('');
   const [validityDays, setValidityDays] = useState('');
   const [applyCoupan, setApplyCoupan] = useState('ENABLE'); // 'ENABLE' (1) | 'DISABLE' (2)
-  const [status, setStatus] = useState('ENABLE'); // 'ENABLE' (1 - Active) | 'DISABLE' (2 - Inactive)
+  const [status, setStatus] = useState(1); // 1- Pending, 2- Active, 3- Expired, 4- Redeem
 
   // Reset when modal opens
   useEffect(() => {
@@ -33,7 +33,7 @@ export default function CustomizePackageModal({ isOpen, onClose, onPackageCustom
       setAmount('');
       setValidityDays('');
       setApplyCoupan('ENABLE');
-      setStatus('ENABLE');
+      setStatus(1);
     }
   }, [isOpen]);
 
@@ -77,7 +77,7 @@ export default function CustomizePackageModal({ isOpen, onClose, onPackageCustom
         pkgCode: selectedPkg?.name || `PKG-${pkgId}`,
         coupanApply: applyCoupan === 'ENABLE' ? 1 : 2,
         validityDays: Number(validityDays || 30),
-        status: status === 'ENABLE' ? 1 : 2, // 1 = Active, 2 = Inactive
+        status: Number(status), // 1=Pending, 2=Active, 3=Expired, 4=Redeem
       });
 
       showToast?.(res.MSG_USER || 'Customized package created successfully!', 'success');
@@ -88,7 +88,7 @@ export default function CustomizePackageModal({ isOpen, onClose, onPackageCustom
           amount: Number(amount),
           validityDays: Number(validityDays),
           coupanApply: applyCoupan,
-          status: status,
+          status: Number(status),
         });
       }
       onClose();
@@ -266,49 +266,23 @@ export default function CustomizePackageModal({ isOpen, onClose, onPackageCustom
                 </div>
               </div>
 
-              {/* Field 6: Status (ENABLE | DISABLE) */}
+              {/* Field 6: Status Dropdown (1 - Pending, 2 - Active, 3 - Expired, 4 - Redeem) */}
               <div>
                 <label className="form-label fw-semibold text-dark mb-2" style={{ fontSize: '0.88rem' }}>
                   Status
                 </label>
-                <div className="d-flex rounded-3 overflow-hidden border" style={{ borderColor: '#e2e8f0', maxWidth: '320px' }}>
-                  <button
-                    type="button"
-                    className={`btn flex-fill py-2 fw-bold text-uppercase d-inline-flex align-items-center justify-content-center transition-all ${
-                      status === 'ENABLE'
-                        ? 'text-white'
-                        : 'text-secondary bg-white'
-                    }`}
-                    style={{
-                      fontSize: '0.82rem',
-                      backgroundColor: status === 'ENABLE' ? '#059669' : 'transparent',
-                      border: 'none',
-                      borderRadius: 0,
-                    }}
-                    onClick={() => setStatus('ENABLE')}
-                  >
-                    <i className={`bi bi-${status === 'ENABLE' ? 'check2-circle' : 'circle'} me-2 fs-6`}></i>
-                    <span>ENABLE</span>
-                  </button>
-                  <button
-                    type="button"
-                    className={`btn flex-fill py-2 fw-bold text-uppercase d-inline-flex align-items-center justify-content-center transition-all ${
-                      status === 'DISABLE'
-                        ? 'text-white'
-                        : 'text-secondary bg-white'
-                    }`}
-                    style={{
-                      fontSize: '0.82rem',
-                      backgroundColor: status === 'DISABLE' ? '#64748b' : 'transparent',
-                      border: 'none',
-                      borderRadius: 0,
-                    }}
-                    onClick={() => setStatus('DISABLE')}
-                  >
-                    <i className={`bi bi-${status === 'DISABLE' ? 'x-circle' : 'circle'} me-2 fs-6`}></i>
-                    <span>DISABLE</span>
-                  </button>
-                </div>
+                <select
+                  className="form-select rounded-3 px-3"
+                  style={{ height: '44px', fontSize: '0.9rem', borderColor: '#e2e8f0', color: '#000000' }}
+                  value={status}
+                  onChange={(e) => setStatus(Number(e.target.value))}
+                  required
+                >
+                  <option value={1}>1 - Pending (Yet to approve from admin)</option>
+                  <option value={2}>2 - Active</option>
+                  <option value={3}>3 - Expired</option>
+                  <option value={4}>4 - Redeem</option>
+                </select>
               </div>
 
             </div>

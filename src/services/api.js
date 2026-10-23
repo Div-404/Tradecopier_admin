@@ -502,6 +502,7 @@ export async function apiAddAdmUserSubscribed(oPkg, key = "") {
  * ADD_USER_CUSTOMIZE_PKG
  * POST /ADD_USER_CUSTOMIZE_PKG
  * Body: { "Key": "", "oCust": { Profile_ID, Pkg_ID, Amt, PkgCode, CoupanApply, Validity_Day, dtCreated, Status } }
+ * Status: 1 Pending (default), 2 Active, 3 Expired, 4 Redeem
  */
 export async function apiAddUserCustomizePkg({
   profileId,
@@ -510,7 +511,7 @@ export async function apiAddUserCustomizePkg({
   pkgCode = "",
   coupanApply = 2,
   validityDays = 30,
-  status = 2,
+  status = 1,
   key = "",
 }) {
   const result = await safeApiPost("ADD_USER_CUSTOMIZE_PKG", {
@@ -534,7 +535,7 @@ export const apiAddAdmPkgCustomize = apiAddUserCustomizePkg;
  * GET_ADM_USER_CUSTOMIZE_PKG
  * POST /GET_ADM_USER_CUSTOMIZE_PKG
  * Body: { "Initial": 1, "MaxCount": 10 }
- * Response: { "Count": 1, "lstPkg": [ ... ] }
+ * Response: { "Count": 1, "lstPkg": [ { Pkg, oCustomize: { Amt, CoupanApply, PkgCode, Pkg_ID, Profile_ID, Status, Validity_Day, dtCreated }, oUsrSnp } ] }
  */
 export async function apiGetAdmUserCustomizePkg({
   initial = 1,
@@ -553,7 +554,8 @@ export const apiGetAdmPkgCustomize = apiGetAdmUserCustomizePkg;
 /**
  * UPDATE_CUSTOMIZE_PKG_STATUS
  * POST /UPDATE_CUSTOMIZE_PKG_STATUS
- * Body: { "Key": "", "Reserve1": "<PkgCode/BrokerID>", "Reserve2": "1" } (1- Enable, 2- Disable)
+ * Body: { "Key": "", "Reserve1": "<PkgCode>", "Reserve2": "<1-4>" }
+ * Status codes: 1=Pending, 2=Active, 3=Expired, 4=Redeem
  */
 export async function apiUpdateCustomizePkgStatus({
   reserve1,
@@ -573,12 +575,16 @@ export async function apiUpdateCustomizePkgStatus({
 /**
  * BIL_PKG_TRANS_GET_ALL
  * POST /GET_ADM_PKG_TRANS
+ * Body: { "Key": "", "Filter_User": "", "Initial": 0, "MaxCount": 10 }
  */
-export async function apiGetAdmPkgTrans(key = "") {
+export async function apiGetAdmPkgTrans(params = {}) {
+  const options = typeof params === "string" ? { key: params } : (params || {});
+  const { filterUser = "", initial = 0, maxCount = 50, key = "" } = options;
   const result = await safeApiPost("GET_ADM_PKG_TRANS", {
     Key: key,
-    Initial: 1,
-    MaxCount: 10,
+    Filter_User: String(filterUser || ""),
+    Initial: Number(initial),
+    MaxCount: Number(maxCount),
   });
   return result || { Count: 0, lstGet: [] };
 }

@@ -17,6 +17,7 @@ export default function FinanceTransactionsTab() {
 
   // Filters & search
   const [searchQuery, setSearchQuery] = useState('');
+  const [userFilter, setUserFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [pkgFilter, setPkgFilter] = useState('ALL');
 
@@ -25,10 +26,14 @@ export default function FinanceTransactionsTab() {
   };
 
   // Load package transactions from API with fallback
-  const loadPackageTransactions = async () => {
+  const loadPackageTransactions = async (filterUserVal = userFilter) => {
     setLoading(true);
     try {
-      const res = await apiGetAdmPkgTrans();
+      const res = await apiGetAdmPkgTrans({
+        filterUser: filterUserVal,
+        initial: 0,
+        maxCount: 50,
+      });
       const list = res?.lstGet || [];
 
       if (Array.isArray(list) && list.length > 0) {
@@ -70,8 +75,13 @@ export default function FinanceTransactionsTab() {
     }
   };
 
+  const handleUserFilterChange = (val) => {
+    setUserFilter(val);
+    loadPackageTransactions(val);
+  };
+
   useEffect(() => {
-    loadPackageTransactions();
+    loadPackageTransactions(userFilter);
   }, [brokers, packages]);
 
   // Metrics
@@ -184,7 +194,7 @@ export default function FinanceTransactionsTab() {
           <div className="d-flex flex-wrap gap-2 align-items-center justify-content-between">
             <div className="d-flex flex-wrap gap-2 flex-grow-1">
               
-              <div className="position-relative" style={{ minWidth: '260px' }}>
+              <div className="position-relative" style={{ minWidth: '240px' }}>
                 <i className="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"></i>
                 <input
                   type="text"
@@ -197,7 +207,21 @@ export default function FinanceTransactionsTab() {
 
               <select
                 className="form-select bg-white rounded-3"
-                style={{ width: '170px', height: '42px', fontSize: '0.88rem', borderColor: '#e2e8f0' }}
+                style={{ width: '190px', height: '42px', fontSize: '0.88rem', borderColor: '#e2e8f0' }}
+                value={userFilter}
+                onChange={(e) => handleUserFilterChange(e.target.value)}
+              >
+                <option value="">All Brokers / Users</option>
+                {brokers.map((b) => (
+                  <option key={b.profileId || b.id || b.managerId} value={b.profileId || b.managerId || b.id}>
+                    {b.name} (#{b.profileId || b.managerId})
+                  </option>
+                ))}
+              </select>
+
+              <select
+                className="form-select bg-white rounded-3"
+                style={{ width: '160px', height: '42px', fontSize: '0.88rem', borderColor: '#e2e8f0' }}
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
               >
@@ -209,7 +233,7 @@ export default function FinanceTransactionsTab() {
 
               <select
                 className="form-select bg-white rounded-3"
-                style={{ width: '200px', height: '42px', fontSize: '0.88rem', borderColor: '#e2e8f0' }}
+                style={{ width: '190px', height: '42px', fontSize: '0.88rem', borderColor: '#e2e8f0' }}
                 value={pkgFilter}
                 onChange={(e) => setPkgFilter(e.target.value)}
               >
@@ -226,7 +250,7 @@ export default function FinanceTransactionsTab() {
               type="button"
               className="btn btn-outline-secondary rounded-3 px-3 d-flex align-items-center gap-2 fw-semibold"
               style={{ height: '42px', fontSize: '0.86rem', borderColor: '#e2e8f0' }}
-              onClick={loadPackageTransactions}
+              onClick={() => loadPackageTransactions(userFilter)}
               title="Refresh Package Transactions"
             >
               <i className={`bi bi-arrow-clockwise me-2 ${loading ? 'spin' : ''}`}></i>

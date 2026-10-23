@@ -35,6 +35,7 @@ export default function FinancePackagesTab() {
   const [customizePackages, setCustomizePackages] = useState([]);
   const [loadingCustomize, setLoadingCustomize] = useState(false);
   const [togglingPkgCode, setTogglingPkgCode] = useState(null);
+  const [selectedStatuses, setSelectedStatuses] = useState({});
 
   // Modal states
   const [isCreatePackageOpen, setIsCreatePackageOpen] = useState(false);
@@ -107,20 +108,30 @@ export default function FinancePackagesTab() {
     }
   };
 
-  // Toggle Customized Package Status via UPDATE_CUSTOMIZE_PKG_STATUS API
-  const handleToggleCustomizeStatus = async (item) => {
-    const oPkg = item.oPkg || item;
-    const pkgCode = oPkg.PkgCode || item.PkgID;
-    const currentStatus = Number(oPkg.Status ?? 1);
-    const newStatus = currentStatus === 1 ? 2 : 1; // 1- Enable, 2- Disable
+  // Handle changing status selection in table row
+  const handleStatusChange = (pkgKey, newStatus) => {
+    setSelectedStatuses((prev) => ({ ...prev, [pkgKey]: Number(newStatus) }));
+  };
 
-    setTogglingPkgCode(pkgCode);
+  // Update Customized Package Status via UPDATE_CUSTOMIZE_PKG_STATUS API
+  const handleUpdateCustomizeStatus = async (item, pkgKey) => {
+    const cust = item.oCustomize || item.oPkg || item;
+    const pkgCode = cust.PkgCode || item.PkgCode || (cust.Pkg_ID ? `PKG-${cust.Pkg_ID}` : item.PkgID ? `PKG-${item.PkgID}` : '');
+    const currentStatus = Number(cust.Status ?? 1);
+    const targetStatus = selectedStatuses[pkgKey] ?? currentStatus;
+
+    if (!pkgCode) {
+      showToast?.("Invalid Package Code for update", "error");
+      return;
+    }
+
+    setTogglingPkgCode(pkgKey);
     try {
       const res = await apiUpdateCustomizePkgStatus({
         reserve1: pkgCode,
-        status: newStatus,
+        status: targetStatus,
       });
-      showToast?.(res.MSG_USER || `Package status updated to ${newStatus === 1 ? 'Active' : 'Disabled'}`, 'success');
+      showToast?.(res.MSG_USER || `Package status updated successfully!`, 'success');
       await fetchCustomizePackages();
     } catch (err) {
       console.error("UPDATE_CUSTOMIZE_PKG_STATUS Error:", err);
@@ -447,52 +458,75 @@ export default function FinancePackagesTab() {
                   <th className="py-3 px-3">Broker / User</th>
                   <th className="py-3 px-3">Package Code</th>
                   <th className="py-3 px-3">Custom Rate</th>
+                  <th className="py-3 px-3">Created On</th>
                   <th className="py-3 px-3">Validity</th>
                   <th className="py-3 px-3">Coupon Apply</th>
-                  <th className="py-3 px-3">Status</th>
+                  <th className="py-3 px-3" style={{ minWidth: '150px' }}>Status</th>
                   <th className="py-3 px-3 text-end">Action</th>
                 </tr>
               </thead>
               <tbody style={{ fontSize: '0.86rem' }}>
                 {customizePackages.map((item, idx) => {
-                  const oPkg = item.oPkg || item;
-                  const profileId = oPkg.Profile_ID ?? item.Profile_ID;
+                  const cust = item.oCustomize || item.oPkg || item;
+                  const userSnp = item.oUsrSnp || {};
+                  const profileId = cust.Profile_ID ?? item.Profile_ID ?? userSnp.Profile;
                   const broker = brokers.find((b) => String(b.profileId || b.id || b.managerId) === String(profileId));
-                  const isEnabled = Number(oPkg.Status) === 1;
-                  const isToggling = togglingPkgCode === oPkg.PkgCode;
+
+                  const pkgCode = cust.PkgCode || item.PkgCode || (cust.Pkg_ID ? `PKG-${cust.Pkg_ID}` : item.PkgID ? `PKG-${item.PkgID}` : 'PKG-Custom');
+                  const pkgName = item.Pkg || cust.Pkg || 'Custom Package';
+                  const amount = cust.Amt ?? cust.Amount ?? item.Amt ?? item.Amount ?? 0;
+                  const validityDays = cust.Validity_Day ?? cust.ValidityDays ?? 30;
+                  const coupanApply = Number(cust.CoupanApply ?? cust.Coupan_Apply ?? 2);
+                  const currentStatus = Number(cust.Status ?? 1);
+                  const createdOn = cust.dtCreated?.Tm_Str || (typeof cust.dtCreated === 'string' ? cust.dtCreated : (item.dtCreated?.Tm_Str || item.dtCreated || 'N/A'));
+
+                  const rowKey = pkgCode || item.PkgID || idx;
+                  const selectedStatus = selectedStatuses[rowKey] ?? currentStatus;
+                  const isUpdating = togglingPkgCode === rowKey;
 
                   return (
-                    <tr key={item.PkgID || oPkg.PkgCode || idx}>
+                    <tr key={rowKey}>
                       <td className="py-3 px-3">
                         <div className="d-flex align-items-center gap-2">
                           <div 
                             className="rounded-circle d-flex align-items-center justify-content-center fw-bold"
                             style={{ width: '36px', height: '36px', backgroundColor: '#e2e8f0', color: '#000000', fontSize: '0.78rem' }}
                           >
-                            {broker?.name ? broker.name.charAt(0).toUpperCase() : 'B'}
+                            {userSnp.Name ? userSnp.Name.charAt(0).toUpperCase() : broker?.name ? broker.name.charAt(0).toUpperCase() : 'B'}
                           </div>
                           <div>
-                            <div className="fw-bold text-dark">{broker?.name || `Broker Profile #${profileId}`}</div>
+                            <div className="fw-bold text-dark">{userSnp.Name || broker?.name || `Broker Profile #${profileId}`}</div>
                             <div className="text-secondary" style={{ fontSize: '0.75rem' }}>
-                              {broker?.email || `Profile ID: ${profileId}`}
+                              {userSnp.Email || broker?.email || `Profile ID: ${profileId}`}
                             </div>
                           </div>
                         </div>
                       </td>
                       <td className="py-3 px-3">
-                        <span className="badge bg-light text-black border border-secondary border-opacity-25 px-2.5 py-1 fw-bold" style={{ fontSize: '0.8rem' }}>
-                          {oPkg.PkgCode || `PKG-${item.PkgID}`}
-                        </span>
+                        <div className="d-flex flex-column">
+                          <span className="badge bg-light text-black border border-secondary border-opacity-25 px-2.5 py-1 fw-bold align-self-start" style={{ fontSize: '0.8rem' }}>
+                            {pkgCode}
+                          </span>
+                          {pkgName && (
+                            <span className="text-secondary mt-1" style={{ fontSize: '0.74rem' }}>
+                              {pkgName}
+                            </span>
+                          )}
+                        </div>
                       </td>
-                      <td className="py-3 px-3 fw-bold text-dark">
-                        ${Number(oPkg.Amt || 0).toLocaleString()} USD
+                      <td className="py-3 px-3 fw-bold text-dark font-tabular">
+                        ${Number(amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+                      </td>
+                      <td className="py-3 px-3 text-secondary font-tabular" style={{ fontSize: '0.82rem' }}>
+                        <i className="bi bi-clock me-1 text-secondary"></i>
+                        {createdOn}
                       </td>
                       <td className="py-3 px-3 text-dark">
                         <i className="bi bi-calendar3 me-2 text-secondary"></i>
-                        {oPkg.ValidityDays || oPkg.Validity_Day || 30} Days
+                        {validityDays} Days
                       </td>
                       <td className="py-3 px-3">
-                        {Number(oPkg.Coupan_Apply ?? oPkg.CoupanApply) === 1 ? (
+                        {coupanApply === 1 ? (
                           <span className="badge bg-success bg-opacity-10 text-black border border-success border-opacity-25 px-2.5 py-1">
                             <i className="bi bi-check2 me-2"></i>Enabled
                           </span>
@@ -503,40 +537,52 @@ export default function FinancePackagesTab() {
                         )}
                       </td>
                       <td className="py-3 px-3">
-                        {isEnabled ? (
-                          <span className="badge bg-success bg-opacity-10 text-black border border-success border-opacity-25 px-3 py-1">
-                            <i className="bi bi-check-circle-fill me-2"></i>Active
-                          </span>
-                        ) : (
-                          <span className="badge bg-danger bg-opacity-10 text-black border border-danger border-opacity-25 px-3 py-1">
-                            <i className="bi bi-x-circle-fill me-2"></i>Inactive
-                          </span>
-                        )}
+                        <select
+                          className="form-select form-select-sm rounded-2 font-tabular fw-semibold shadow-none"
+                          style={{
+                            fontSize: '0.8rem',
+                            height: '34px',
+                            minWidth: '135px',
+                            color: '#000000',
+                            backgroundColor:
+                              selectedStatus === 2 ? '#f0fdf4' :
+                              selectedStatus === 1 ? '#fefce8' :
+                              selectedStatus === 4 ? '#ecfeff' :
+                              '#f8fafc',
+                            borderColor:
+                              selectedStatus === 2 ? '#86efac' :
+                              selectedStatus === 1 ? '#fde047' :
+                              selectedStatus === 4 ? '#67e8f9' :
+                              '#cbd5e1',
+                          }}
+                          value={selectedStatus}
+                          onChange={(e) => handleStatusChange(rowKey, e.target.value)}
+                          disabled={isUpdating}
+                        >
+                          <option value={1}>1 - Pending</option>
+                          <option value={2}>2 - Active</option>
+                          <option value={3}>3 - Expired</option>
+                          <option value={4}>4 - Redeem</option>
+                        </select>
                       </td>
                       <td className="py-3 px-3 text-end">
                         <button
                           type="button"
-                          className={`btn btn-sm d-inline-flex align-items-center gap-2 fw-semibold px-3 py-1.5 rounded-2 ${
-                            isEnabled ? 'btn-outline-danger' : 'btn-outline-success'
-                          }`}
+                          className="btn btn-sm btn-outline-success d-inline-flex align-items-center gap-1.5 fw-semibold px-3 py-1.5 rounded-2 shadow-2xs"
                           style={{ fontSize: '0.8rem' }}
-                          onClick={() => handleToggleCustomizeStatus(item)}
-                          disabled={isToggling}
+                          onClick={() => handleUpdateCustomizeStatus(item, rowKey)}
+                          disabled={isUpdating}
+                          title="Update Package Status"
                         >
-                          {isToggling ? (
+                          {isUpdating ? (
                             <>
                               <span className="spinner-border spinner-border-sm me-2"></span>
                               <span>Updating...</span>
                             </>
-                          ) : isEnabled ? (
-                            <>
-                              <i className="bi bi-slash-circle me-2"></i>
-                              <span>Disable</span>
-                            </>
                           ) : (
                             <>
-                              <i className="bi bi-check-circle me-2"></i>
-                              <span>Enable</span>
+                              <i className="bi bi-check2-circle me-1"></i>
+                              <span>Update</span>
                             </>
                           )}
                         </button>
